@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "kms_iam_policy" {
-  name        = "terraform-kms-management-${var.tag.environment}"
+  name        = "terraform-kms-management-${var.tags.environment}"
   description = "Allows the Terraform CI role to create and manage KMS keys"
   policy      = data.aws_iam_policy_document.kms_iam_policy_document.json
   tags        = var.tags
@@ -26,74 +26,74 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
       values   = [var.aws_region]
     }
   }
-  
-#   statement {
-#     effect = "Allow"
 
-#     actions = [
-#       "kms:CreateKey",
-#       "kms:DescribeKey",
-#       "kms:GetKeyPolicy",
-#       "kms:GetKeyRotationStatus",
-#       "kms:ListResourceTags",
-#       "kms:ScheduleKeyDeletion",
-#       "kms:CancelKeyDeletion",
-#       "kms:EnableKeyRotation",
-#       "kms:DisableKeyRotation",
-#       "kms:UpdateKeyDescription",
-#       "kms:TagResource",
-#       "kms:UntagResource",
-#     ]
+  #   statement {
+  #     effect = "Allow"
 
-#     # Scope CreateKey to * (required by AWS — no resource ARN exists before creation).
-#     # All other actions are scoped to keys tagged as managed by Terraform.
-#     resources = ["*"]
+  #     actions = [
+  #       "kms:CreateKey",
+  #       "kms:DescribeKey",
+  #       "kms:GetKeyPolicy",
+  #       "kms:GetKeyRotationStatus",
+  #       "kms:ListResourceTags",
+  #       "kms:ScheduleKeyDeletion",
+  #       "kms:CancelKeyDeletion",
+  #       "kms:EnableKeyRotation",
+  #       "kms:DisableKeyRotation",
+  #       "kms:UpdateKeyDescription",
+  #       "kms:TagResource",
+  #       "kms:UntagResource",
+  #     ]
 
-#     condition {
-#       test     = "StringEquals"
-#       variable = "aws:RequestedRegion"
-#       values   = [var.aws_region]
-#     }
-#   }
+  #     # Scope CreateKey to * (required by AWS — no resource ARN exists before creation).
+  #     # All other actions are scoped to keys tagged as managed by Terraform.
+  #     resources = ["*"]
 
-#   statement {
-#     sid    = "AllowKMSKeyUsage"
-#     effect = "Allow"
+  #     condition {
+  #       test     = "StringEquals"
+  #       variable = "aws:RequestedRegion"
+  #       values   = [var.aws_region]
+  #     }
+  #   }
 
-#     actions = [
-#       "kms:Encrypt",
-#       "kms:Decrypt",
-#       "kms:ReEncrypt*",
-#       "kms:GenerateDataKey*",
-#       "kms:CreateGrant",
-#       "kms:ListGrants",
-#       "kms:RevokeGrant",
-#     ]
+  #   statement {
+  #     sid    = "AllowKMSKeyUsage"
+  #     effect = "Allow"
 
-#     resources = ["*"]
+  #     actions = [
+  #       "kms:Encrypt",
+  #       "kms:Decrypt",
+  #       "kms:ReEncrypt*",
+  #       "kms:GenerateDataKey*",
+  #       "kms:CreateGrant",
+  #       "kms:ListGrants",
+  #       "kms:RevokeGrant",
+  #     ]
 
-#     condition {
-#       test     = "StringEquals"
-#       variable = "aws:ResourceTag/ManagedBy"
-#       values   = ["terraform"]
-#     }
-#   }
+  #     resources = ["*"]
 
-#   statement {
-#     sid    = "AllowKMSAliasManagement"
-#     effect = "Allow"
+  #     condition {
+  #       test     = "StringEquals"
+  #       variable = "aws:ResourceTag/ManagedBy"
+  #       values   = ["terraform"]
+  #     }
+  #   }
 
-#     actions = [
-#       "kms:CreateAlias",
-#       "kms:DeleteAlias",
-#       "kms:UpdateAlias",
-#       "kms:ListAliases",
-#     ]
+  #   statement {
+  #     sid    = "AllowKMSAliasManagement"
+  #     effect = "Allow"
 
-#     # Alias ARNs require both the alias resource and the key resource
-#     resources = [
-#       "arn:aws:kms:${var.aws_region}:${var.account_id}:alias/*",
-#       "arn:aws:kms:${var.aws_region}:${var.account_id}:key/*",
-#     ]
-#   }
+  #     actions = [
+  #       "kms:CreateAlias",
+  #       "kms:DeleteAlias",
+  #       "kms:UpdateAlias",
+  #       "kms:ListAliases",
+  #     ]
+
+  #     # Alias ARNs require both the alias resource and the key resource
+  #     resources = [
+  #       "arn:aws:kms:${var.aws_region}:${var.account_id}:alias/*",
+  #       "arn:aws:kms:${var.aws_region}:${var.account_id}:key/*",
+  #     ]
+  #   }
 }
