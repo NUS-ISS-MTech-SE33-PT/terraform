@@ -10,6 +10,8 @@ resource "aws_iam_role_policy_attachment" "terraform_iam_read" {
   policy_arn = aws_iam_policy.iam_read_policy.arn
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "iam_read_policy_document" {
   statement {
     sid    = "AllowGetTerraformManagedPolicies"
@@ -21,7 +23,7 @@ data "aws_iam_policy_document" "iam_read_policy_document" {
     ]
 
     resources = [
-      "arn:aws:iam::${var.account_id}:policy/terraform-kms-management-${var.tags.environment}",
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/terraform-kms-management-${var.tags.environment}",
     ]
   }
 }
