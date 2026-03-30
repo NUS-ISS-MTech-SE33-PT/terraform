@@ -1,5 +1,6 @@
 variable "aws_region" { type = string }
 variable "role_name" { type = string }
+variable "account_id" { type = string }
 variable "tags" {
   type = object({
     environment = string

@@ -72,11 +72,11 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
 
   #     resources = ["*"]
 
-  #     condition {
-  #       test     = "StringEquals"
-  #       variable = "aws:ResourceTag/ManagedBy"
-  #       values   = ["terraform"]
-  #     }
+  #   condition {
+  #     test     = "StringEquals"
+  #     variable = "aws:ResourceTag/ManagedBy"
+  #     values   = ["terraform"]
+  #   }
   #   }
 
   #   statement {
