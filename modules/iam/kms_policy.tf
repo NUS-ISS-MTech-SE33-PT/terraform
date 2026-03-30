@@ -1,14 +1,15 @@
 resource "aws_iam_policy" "kms_iam_policy" {
-  name        = "terraform-kms-management-${var.tags.environment}"
-  description = "Allows the Terraform CI role to create and manage KMS keys"
-  policy      = data.aws_iam_policy_document.kms_iam_policy_document.json
-  tags        = var.tags
+  name   = "terraform-kms-management-${var.tags.environment}"
+  policy = data.aws_iam_policy_document.kms_iam_policy_document.json
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "terraform_kms" {
   role       = var.role_name
   policy_arn = aws_iam_policy.kms_iam_policy.arn
 }
+
+data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "kms_iam_policy_document" {
   statement {
@@ -27,34 +28,53 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
     }
   }
 
-  #   statement {
-  #     effect = "Allow"
+  statement {
+    effect = "Allow"
 
-  #     actions = [
-  #       "kms:CreateKey",
-  #       "kms:DescribeKey",
-  #       "kms:GetKeyPolicy",
-  #       "kms:GetKeyRotationStatus",
-  #       "kms:ListResourceTags",
-  #       "kms:ScheduleKeyDeletion",
-  #       "kms:CancelKeyDeletion",
-  #       "kms:EnableKeyRotation",
-  #       "kms:DisableKeyRotation",
-  #       "kms:UpdateKeyDescription",
-  #       "kms:TagResource",
-  #       "kms:UntagResource",
-  #     ]
+    actions = [
+      "iam:GetPolicyVersion",
+      "iam:GetPolicy",
+      "iam:ListPolicyVersions",
+      "iam:DeletePolicy",
+      "iam:TagPolicy"
+    ]
 
-  #     # Scope CreateKey to * (required by AWS — no resource ARN exists before creation).
-  #     # All other actions are scoped to keys tagged as managed by Terraform.
-  #     resources = ["*"]
+    resources = ["*"]
 
-  #     condition {
-  #       test     = "StringEquals"
-  #       variable = "aws:RequestedRegion"
-  #       values   = [var.aws_region]
-  #     }
+    condition {
+      test     = "ArnLike"
+      variable = "iam:PolicyARN"
+      values   = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/terraform-kms-management-${var.tags.environment}"]
+    }
+  }
+
+  # statement {
+  #   effect = "Allow"
+
+  #   actions = [
+  #     "kms:DescribeKey",
+  #     "kms:GetKeyPolicy",
+  #     "kms:GetKeyRotationStatus",
+  #     "kms:ListResourceTags",
+  #     "kms:ScheduleKeyDeletion",
+  #     "kms:CancelKeyDeletion",
+  #     "kms:EnableKeyRotation",
+  #     "kms:DisableKeyRotation",
+  #     "kms:UpdateKeyDescription",
+  #     "kms:TagResource",
+  #     "kms:UntagResource",
+  #   ]
+
+  #   resources = [
+  #     "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alias/terraform-kms-management-${var.tags.environment}"
+  #   ]
+
+  #   condition {
+  #     test     = "StringEquals"
+  #     variable = "aws:RequestedRegion"
+  #     values   = [var.aws_region]
   #   }
+  # }
 
   #   statement {
   #     sid    = "AllowKMSKeyUsage"

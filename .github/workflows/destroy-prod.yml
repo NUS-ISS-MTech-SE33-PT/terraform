@@ -40,9 +40,9 @@ jobs:
       - name: Terraform Plan (destroy)
         env:
           TF_VAR_image_uri: "921142537307.dkr.ecr.ap-southeast-1.amazonaws.com/makango-review-service:destroy-dummy"
-        run: terraform plan -destroy -input=false
+        run: terraform plan -destroy -input=false -out=tfplan
 
       - name: Terraform Destroy
         env:
           TF_VAR_image_uri: "921142537307.dkr.ecr.ap-southeast-1.amazonaws.com/makango-review-service:destroy-dummy"
-        run: terraform destroy -auto-approve -input=false
+        run: terraform destroy -auto-approve -input=false tfplan
