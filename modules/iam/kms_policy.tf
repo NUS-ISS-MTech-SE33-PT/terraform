@@ -31,12 +31,7 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
   statement {
     effect = "Allow"
 
-    actions = [
-      "iam:GetPolicyVersion",
-      "iam:GetPolicy",
-      "iam:ListPolicyVersions",
-      "iam:DeletePolicy"
-    ]
+    actions = ["iam:DeletePolicy"]
 
     resources = ["*"]
 
