@@ -35,8 +35,7 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
       "iam:GetPolicyVersion",
       "iam:GetPolicy",
       "iam:ListPolicyVersions",
-      "iam:DeletePolicy",
-      "iam:TagPolicy"
+      "iam:DeletePolicy"
     ]
 
     resources = ["*"]
