@@ -28,7 +28,10 @@ data "aws_iam_policy_document" "bootstrap_policy_document" {
     effect = "Allow"
     actions = [
       "iam:CreatePolicy",
-      "iam:TagPolicy"
+      "iam:TagPolicy",
+      "iam:ListPolicyVersions",
+      "iam:GetPolicyVersion",
+      "iam:GetPolicy",
     ]
     resources = ["*"]
   }
