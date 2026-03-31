@@ -42,9 +42,9 @@ data "aws_iam_policy_document" "bootstrap_policy_document" {
     ]
     resources = ["*"]
     condition {
-      test     = "StringEquals"
-      variable = "aws:ResourceTag/managed_by"
-      values   = ["terraform"]
+      test     = "StringLike"
+      variable = "iam:PolicyARN"
+      values   = ["arn:aws:iam::${local.account_id}:policy/terraform-${local.env}-*"]
     }
   }
 
