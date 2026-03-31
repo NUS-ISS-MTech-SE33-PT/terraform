@@ -28,12 +28,24 @@ data "aws_iam_policy_document" "bootstrap_policy_document" {
     effect = "Allow"
     actions = [
       "iam:CreatePolicy",
-      "iam:TagPolicy",
-      "iam:ListPolicyVersions",
-      "iam:GetPolicyVersion",
-      "iam:GetPolicy",
+      "iam:TagPolicy"
     ]
     resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:ListPolicyVersions",
+      "iam:GetPolicyVersion",
+      "iam:GetPolicy"
+    ]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/managed_by"
+      values   = ["terraform"]
+    }
   }
 
   statement {

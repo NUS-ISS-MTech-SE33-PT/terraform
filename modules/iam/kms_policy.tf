@@ -28,20 +28,6 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
     }
   }
 
-  statement {
-    effect = "Allow"
-
-    actions = ["iam:DeletePolicy"]
-
-    resources = ["*"]
-
-    condition {
-      test     = "ArnLike"
-      variable = "iam:PolicyARN"
-      values   = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/terraform-kms-management-${var.tags.environment}"]
-    }
-  }
-
   # statement {
   #   effect = "Allow"
 
