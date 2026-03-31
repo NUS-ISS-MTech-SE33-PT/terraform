@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "kms_iam_policy" {
-  name   = "terraform-${var.tags.environment}-kms-policy"
+  name   = "terraform-kms-${var.tags.environment}-policy"
   policy = data.aws_iam_policy_document.kms_iam_policy_document.json
   tags   = var.tags
 }

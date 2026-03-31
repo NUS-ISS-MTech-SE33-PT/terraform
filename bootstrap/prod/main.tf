@@ -28,24 +28,13 @@ data "aws_iam_policy_document" "bootstrap_policy_document" {
     effect = "Allow"
     actions = [
       "iam:CreatePolicy",
-      "iam:TagPolicy"
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
+      "iam:TagPolicy",
       "iam:ListPolicyVersions",
       "iam:GetPolicyVersion",
-      "iam:GetPolicy"
+      "iam:GetPolicy",
+      "iam:DeletePolicy"
     ]
-    resources = ["*"]
-    condition {
-      test     = "StringLike"
-      variable = "iam:PolicyARN"
-      values   = ["arn:aws:iam::${local.account_id}:policy/terraform-${local.env}-*"]
-    }
+    resources = ["arn:aws:iam::${local.account_id}:policy/terraform-*-${local.env}-policy"]
   }
 
   statement {
