@@ -28,33 +28,33 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
     }
   }
 
-  # statement {
-  #   effect = "Allow"
+  statement {
+    effect = "Allow"
 
-  #   actions = [
-  #     "kms:DescribeKey",
-  #     "kms:GetKeyPolicy",
-  #     "kms:GetKeyRotationStatus",
-  #     "kms:ListResourceTags",
-  #     "kms:ScheduleKeyDeletion",
-  #     "kms:CancelKeyDeletion",
-  #     "kms:EnableKeyRotation",
-  #     "kms:DisableKeyRotation",
-  #     "kms:UpdateKeyDescription",
-  #     "kms:TagResource",
-  #     "kms:UntagResource",
-  #   ]
+    actions = [
+      "kms:DescribeKey",
+      "kms:GetKeyPolicy",
+      "kms:GetKeyRotationStatus",
+      "kms:ListResourceTags",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+      "kms:EnableKeyRotation",
+      "kms:DisableKeyRotation",
+      "kms:UpdateKeyDescription",
+      "kms:TagResource",
+      "kms:UntagResource",
+    ]
 
-  #   resources = [
-  #     "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alias/terraform-kms-management-${var.tags.environment}"
-  #   ]
+    resources = [
+      "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alias/terraform-kms-management-${var.tags.environment}"
+    ]
 
-  #   condition {
-  #     test     = "StringEquals"
-  #     variable = "aws:RequestedRegion"
-  #     values   = [var.aws_region]
-  #   }
-  # }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [var.aws_region]
+    }
+  }
 
   #   statement {
   #     sid    = "AllowKMSKeyUsage"
