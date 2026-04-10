@@ -5,6 +5,9 @@
 # Local .terraform directories
 **/.terraform/*
 
+# Lock files
+**/.terraform.lock.hcl
+
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -38,3 +41,6 @@ override.tf.json
 terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform
+
+# for mac
+**/.DS_Store

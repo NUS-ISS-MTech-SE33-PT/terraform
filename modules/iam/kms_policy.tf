@@ -97,3 +97,10 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
   #     ]
   #   }
 }
+
+resource "aws_kms_key" "instance" {
+  deletion_window_in_days  = 7
+  enable_key_rotation      = true
+  customer_master_key_spec = "SYMMETRIC_DEFAULT"
+  key_usage                = "ENCRYPT_DECRYPT"
+}
