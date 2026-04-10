@@ -1,7 +1,6 @@
 resource "aws_cognito_user_pool_client" "android_client" {
-  name                                          = local.cognito_user_pool_android_client_name
+  name                                          = "${var.tags.project}-${var.tags.environment}-android-client"
   user_pool_id                                  = aws_cognito_user_pool.instance.id
-  generate_secret                               = null
   refresh_token_validity                        = 30
   auth_session_validity                         = 3
   enable_token_revocation                       = true
@@ -26,10 +25,9 @@ resource "aws_cognito_user_pool_client" "admin_web_client" {
   enable_propagate_additional_user_context_data = false
   enable_token_revocation                       = true
   explicit_auth_flows                           = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_AUTH", "ALLOW_USER_SRP_AUTH"]
-  generate_secret                               = null
   id_token_validity                             = 60
   logout_urls                                   = var.admin_web_urls.logout_urls
-  name                                          = local.cognito_user_pool_admin_web_client_name
+  name                                          = "${var.tags.project}-${var.tags.environment}-admin-web-client"
   prevent_user_existence_errors                 = "ENABLED"
   refresh_token_validity                        = 5
   region                                        = var.aws_region

@@ -2,12 +2,10 @@ resource "aws_cognito_user_pool" "instance" {
   name                       = "${var.tags.project}-${var.tags.environment}-user-pool"
   alias_attributes           = ["email"]
   auto_verified_attributes   = ["email"]
-  deletion_protection        = "INACTIVE"
+  deletion_protection        = "ACTIVE"
   mfa_configuration          = "OFF"
   region                     = var.aws_region
-  sms_authentication_message = null
-  tags                       = {}
-  tags_all                   = {}
+  tags                       = var.tags
   user_pool_tier             = "ESSENTIALS"
   account_recovery_setting {
     recovery_mechanism {
@@ -23,11 +21,7 @@ resource "aws_cognito_user_pool" "instance" {
     allow_admin_create_user_only = false
   }
   email_configuration {
-    configuration_set      = null
     email_sending_account  = "COGNITO_DEFAULT"
-    from_email_address     = null
-    reply_to_email_address = null
-    source_arn             = null
   }
   password_policy {
     minimum_length                   = 6
