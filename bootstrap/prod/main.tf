@@ -25,39 +25,6 @@ data "aws_iam_policy_document" "assume_role_policy_document" {
 
 data "aws_iam_policy_document" "bootstrap_policy_document" {
   statement {
-    effect = "Allow"
-    actions = [
-      "iam:CreatePolicy",
-      "iam:TagPolicy",
-      "iam:ListPolicyVersions",
-      "iam:GetPolicyVersion",
-      "iam:GetPolicy",
-      "iam:DeletePolicy"
-    ]
-    resources = ["arn:aws:iam::${local.account_id}:policy/terraform-*-${local.env}-policy"]
-  }
-
-  statement {
-    effect    = "Allow"
-    actions   = ["iam:ListAttachedRolePolicies", ]
-    resources = [aws_iam_role.instance.arn]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "iam:AttachRolePolicy",
-      "iam:DetachRolePolicy"
-    ]
-    resources = [aws_iam_role.instance.arn]
-    condition {
-      test     = "ArnNotLike"
-      variable = "iam:PolicyARN"
-      values   = ["arn:aws:iam::${local.account_id}:policy/${local.bootstrap_policy_name}"]
-    }
-  }
-
-  statement {
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
     resources = [local.bucket_arn]
@@ -95,7 +62,7 @@ resource "aws_iam_role" "instance" {
 }
 
 resource "aws_iam_policy" "instance" {
-  name   = local.bootstrap_policy_name
+  name   = "terraform-${local.project}-${local.env}-bootstrap-policy"
   policy = data.aws_iam_policy_document.bootstrap_policy_document.json
 }
 
