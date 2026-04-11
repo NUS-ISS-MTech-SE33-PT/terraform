@@ -56,46 +56,6 @@ data "aws_iam_policy_document" "kms_iam_policy_document" {
     }
   }
 
-  #   statement {
-  #     sid    = "AllowKMSKeyUsage"
-  #     effect = "Allow"
-
-  #     actions = [
-  #       "kms:Encrypt",
-  #       "kms:Decrypt",
-  #       "kms:ReEncrypt*",
-  #       "kms:GenerateDataKey*",
-  #       "kms:CreateGrant",
-  #       "kms:ListGrants",
-  #       "kms:RevokeGrant",
-  #     ]
-
-  #     resources = ["*"]
-
-  #   condition {
-  #     test     = "StringEquals"
-  #     variable = "aws:ResourceTag/ManagedBy"
-  #     values   = ["terraform"]
-  #   }
-  #   }
-
-  #   statement {
-  #     sid    = "AllowKMSAliasManagement"
-  #     effect = "Allow"
-
-  #     actions = [
-  #       "kms:CreateAlias",
-  #       "kms:DeleteAlias",
-  #       "kms:UpdateAlias",
-  #       "kms:ListAliases",
-  #     ]
-
-  #     # Alias ARNs require both the alias resource and the key resource
-  #     resources = [
-  #       "arn:aws:kms:${var.aws_region}:${var.account_id}:alias/*",
-  #       "arn:aws:kms:${var.aws_region}:${var.account_id}:key/*",
-  #     ]
-  #   }
 }
 
 resource "aws_kms_key" "instance" {

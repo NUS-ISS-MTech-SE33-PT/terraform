@@ -1,15 +1,5 @@
 locals {
-  aws_iam_role_name = "github-actions-terraform-prod-role"
-}
-
-# module "kms_policy" {
-#   source     = "../../modules/iam"
-#   aws_region = local.aws_region
-#   role_name  = local.aws_iam_role_name
-#   tags       = local.common_tags
-# }
-
-locals {
+  aws_iam_role_name  = "github-actions-terraform-prod-role"
   mobile_auth_url    = "makango://auth"
   web_root_url       = "https://${aws_cloudfront_distribution.web_static.domain_name}"
   admin_web_root_url = "https://${aws_cloudfront_distribution.admin_web.domain_name}"
