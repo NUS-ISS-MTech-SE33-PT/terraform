@@ -5,6 +5,7 @@ data "aws_iam_policy_document" "cloudfront_full_access" {
     resources = [
       "arn:aws:cloudfront::${local.account_id}:distribution/*",
       "arn:aws:cloudfront::${local.account_id}:origin-access-control/*",
+      "arn:aws:cloudfront::${local.account_id}:response-headers-policy/*",
     ]
   }
 }
