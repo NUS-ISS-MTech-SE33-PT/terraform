@@ -58,3 +58,27 @@ resource "aws_apigatewayv2_authorizer" "cognito_authorizer" {
     audience = [module.cognito.android_client_id, module.cognito.admin_web_client_id]
   }
 }
+
+resource "aws_apigatewayv2_vpc_link" "ecs_vpc_link" {
+  name               = "ecs-vpc-link"
+  subnet_ids         = aws_subnet.ecs_subnet[*].id
+  security_group_ids = [aws_security_group.ecs_sg.id]
+}
+
+resource "aws_apigatewayv2_integration" "review_service_integration" {
+  api_id             = aws_apigatewayv2_api.makan_go_http_api.id
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_lb_listener.review_service_network_load_balancer_listener.arn
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.ecs_vpc_link.id
+  integration_method = "ANY"
+
+  request_parameters = {
+    "overwrite:path"           = "$request.path",
+    "append:header.x-user-sub" = "$context.authorizer.claims.sub"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}

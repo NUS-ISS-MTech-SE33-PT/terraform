@@ -1,3 +1,81 @@
 resource "aws_ecs_cluster" "prod_cluster" {
   name = "prod-cluster"
 }
+
+data "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecs-task-execution-role"
+}
+
+data "aws_iam_role" "review_service_task_role" {
+  name = "review-service-ecs-task-role"
+}
+
+resource "aws_ecs_task_definition" "review_service_task" {
+  family                   = "review-service-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = data.aws_iam_role.review_service_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "review-service-container"
+      image     = "${aws_ecr_repository.review_service.repository_url}:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "HTTP_PORTS"
+          value = "80"
+        },
+        {
+          name  = "ReviewPrice__Max"
+          value = "10000"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "makan-go/prod/review-service"
+          "awslogs-region"        = "ap-southeast-1"
+          "awslogs-stream-prefix" = "review-service"
+        }
+      }
+    }
+  ])
+
+  lifecycle {
+    ignore_changes = [container_definitions]
+  }
+}
+
+resource "aws_ecs_service" "review_service" {
+  name            = "review-service"
+  cluster         = aws_ecs_cluster.prod_cluster.id
+  task_definition = aws_ecs_task_definition.review_service_task.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.ecs_subnet[*].id
+    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_sg.id]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.review_service_target_group.arn
+    container_name   = "review-service-container"
+    container_port   = 80
+  }
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+}
