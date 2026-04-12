@@ -3,6 +3,8 @@ set -euo pipefail
 
 PASS=0
 FAIL=0
+BODY_FILE=$(mktemp)
+trap 'rm -f "$BODY_FILE"' EXIT
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -13,6 +15,9 @@ check() {
     ((PASS++)) || true
   else
     echo "  FAIL: $desc  (expected HTTP $expected, got $actual)"
+    if [ -s "$BODY_FILE" ]; then
+      echo "        response: $(cat "$BODY_FILE")"
+    fi
     ((FAIL++)) || true
   fi
 }
@@ -21,7 +26,7 @@ check() {
 req() {
   local method="$1" path="$2"
   shift 2
-  curl -s -o /dev/null -w "%{http_code}" \
+  curl -s -o "$BODY_FILE" -w "%{http_code}" \
     -X "$method" \
     -H "Authorization: Bearer $TOKEN" \
     "$@" \
@@ -32,7 +37,7 @@ req() {
 req_unauth() {
   local method="$1" path="$2"
   shift 2
-  curl -s -o /dev/null -w "%{http_code}" \
+  curl -s -o "$BODY_FILE" -w "%{http_code}" \
     -X "$method" \
     "$@" \
     "$API_BASE_URL/prod$path"
@@ -67,11 +72,11 @@ echo "  Token obtained."
 echo ""
 echo "==> Auth guard (no token → 401)"
 
-check "POST /spots/{id}/reviews"   401 "$(req_unauth POST "/spots/$TEST_SPOT_ID/reviews")"
-check "GET  /users/me/reviews"     401 "$(req_unauth GET  /users/me/reviews)"
-check "GET  /users/me/favorites"   401 "$(req_unauth GET  /users/me/favorites)"
-check "GET  /spots/{id}/favorite"  401 "$(req_unauth GET  "/spots/$TEST_SPOT_ID/favorite")"
-check "PUT  /spots/{id}/favorite"  401 "$(req_unauth PUT  "/spots/$TEST_SPOT_ID/favorite")"
+check "POST /spots/{id}/reviews"    401 "$(req_unauth POST "/spots/$TEST_SPOT_ID/reviews")"
+check "GET  /users/me/reviews"      401 "$(req_unauth GET  /users/me/reviews)"
+check "GET  /users/me/favorites"    401 "$(req_unauth GET  /users/me/favorites)"
+check "GET  /spots/{id}/favorite"   401 "$(req_unauth GET  "/spots/$TEST_SPOT_ID/favorite")"
+check "PUT  /spots/{id}/favorite"   401 "$(req_unauth PUT  "/spots/$TEST_SPOT_ID/favorite")"
 check "DELETE /spots/{id}/favorite" 401 "$(req_unauth DELETE "/spots/$TEST_SPOT_ID/favorite")"
 
 # ── Happy path — authenticated requests must not return 401/403 ───────────────
