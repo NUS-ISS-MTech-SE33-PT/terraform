@@ -93,11 +93,11 @@ resource "aws_apigatewayv2_route" "auth_route" {
     "DELETE /spots/{id}/favorite"
   ])
 
-  api_id             = data.terraform_remote_state.infra_api_gateway.outputs.aws_apigatewayv2_api_makan_go_http_api_id
+  api_id             = aws_apigatewayv2_api.makan_go_http_api.id
   route_key          = each.value
   target             = "integrations/${aws_apigatewayv2_integration.review_service_integration.id}"
   authorization_type = "JWT"
-  authorizer_id      = data.terraform_remote_state.infra_api_gateway.outputs.aws_apigatewayv2_cognito_authorizer_id
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
 
   lifecycle {
     create_before_destroy = true
