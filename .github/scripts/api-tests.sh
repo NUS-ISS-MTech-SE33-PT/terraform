@@ -44,12 +44,13 @@ req_unauth() {
 
 echo "==> Authenticating with Cognito..."
 
-COGNITO_RESPONSE=$(aws cognito-idp initiate-auth \
-  --auth-flow USER_PASSWORD_AUTH \
-  --client-id "$COGNITO_CLIENT_ID" \
-  --auth-parameters USERNAME="$TEST_USERNAME",PASSWORD="$TEST_PASSWORD" \
-  --region ap-southeast-1 \
-  --output json)
+BODY="{\"AuthFlow\":\"USER_PASSWORD_AUTH\",\"ClientId\":\"$COGNITO_CLIENT_ID\",\"AuthParameters\":{\"USERNAME\":\"$TEST_USERNAME\",\"PASSWORD\":\"$TEST_PASSWORD\"}}"
+
+COGNITO_RESPONSE=$(curl -s -X POST \
+  "https://cognito-idp.ap-southeast-1.amazonaws.com/" \
+  -H "X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth" \
+  -H "Content-Type: application/x-amz-json-1.1" \
+  -d "$BODY")
 
 TOKEN=$(echo "$COGNITO_RESPONSE" | jq -r '.AuthenticationResult.IdToken')
 
