@@ -82,3 +82,24 @@ resource "aws_apigatewayv2_integration" "review_service_integration" {
     create_before_destroy = true
   }
 }
+
+resource "aws_apigatewayv2_route" "auth_route" {
+  for_each = toset([
+    "POST /spots/{id}/reviews",
+    "GET /users/me/reviews",
+    "GET /users/me/favorites",
+    "GET /spots/{id}/favorite",
+    "PUT /spots/{id}/favorite",
+    "DELETE /spots/{id}/favorite"
+  ])
+
+  api_id             = data.terraform_remote_state.infra_api_gateway.outputs.aws_apigatewayv2_api_makan_go_http_api_id
+  route_key          = each.value
+  target             = "integrations/${aws_apigatewayv2_integration.review_service_integration.id}"
+  authorization_type = "JWT"
+  authorizer_id      = data.terraform_remote_state.infra_api_gateway.outputs.aws_apigatewayv2_cognito_authorizer_id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}

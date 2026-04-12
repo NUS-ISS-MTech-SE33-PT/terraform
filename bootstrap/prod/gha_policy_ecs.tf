@@ -24,6 +24,12 @@ data "aws_iam_policy_document" "ecs_full_access" {
 
   statement {
     effect    = "Allow"
+    actions   = ["iam:GetRole"]
+    resources = ["arn:aws:iam::${local.account_id}:role/*"]
+  }
+
+  statement {
+    effect    = "Allow"
     actions   = ["iam:PassRole"]
     resources = ["arn:aws:iam::${local.account_id}:role/*"]
 
