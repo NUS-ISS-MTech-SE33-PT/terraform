@@ -1,7 +1,10 @@
 locals {
   ecs_task_role_services = {
     "review-service" = {
-      table_arns = ["arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/reviews-prod"]
+      table_arns = [
+        "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/reviews-prod",
+        "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/favorites-prod",
+      ]
     }
   }
 }
