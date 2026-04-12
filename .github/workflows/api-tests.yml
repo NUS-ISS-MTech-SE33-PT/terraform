@@ -21,4 +21,5 @@ jobs:
           COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          TEST_SPOT_ID: ${{ secrets.TEST_SPOT_ID }}
         run: bash .github/scripts/api-tests.sh

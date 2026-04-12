@@ -4,7 +4,7 @@ set -euo pipefail
 PASS=0
 FAIL=0
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
 check() {
   local desc="$1" expected="$2" actual="$3"
@@ -17,17 +17,30 @@ check() {
   fi
 }
 
-get() {
+# Authenticated request
+req() {
+  local method="$1" path="$2"
+  shift 2
   curl -s -o /dev/null -w "%{http_code}" \
+    -X "$method" \
     -H "Authorization: Bearer $TOKEN" \
-    "$API_BASE_URL$1"
+    "$@" \
+    "$API_BASE_URL/prod$path"
 }
 
-get_unauth() {
-  curl -s -o /dev/null -w "%{http_code}" "$API_BASE_URL$1"
+# Unauthenticated request
+req_unauth() {
+  local method="$1" path="$2"
+  shift 2
+  curl -s -o /dev/null -w "%{http_code}" \
+    -X "$method" \
+    "$@" \
+    "$API_BASE_URL/prod$path"
 }
 
 # ── Fetch Cognito token ───────────────────────────────────────────────────────
+# COGNITO_CLIENT_ID must be either android_client_id or admin_web_client_id —
+# both are registered as valid audiences on the JWT authorizer.
 
 echo "==> Authenticating with Cognito..."
 
@@ -54,33 +67,37 @@ fi
 
 echo "  Token obtained."
 
-# ── Auth guard tests (run for every protected endpoint) ───────────────────────
-# These verify that security config is working — a request with no token must
-# be rejected. Add one entry per protected endpoint.
+# ── Auth guard — all protected routes must reject requests without a token ────
 
 echo ""
-echo "==> Auth guard (unauthenticated requests should return 401)"
+echo "==> Auth guard (no token → 401)"
 
-# TODO: replace with your actual endpoint paths
-check "GET /users → 401 without token"   401 "$(get_unauth /users)"
-check "GET /orders → 401 without token"  401 "$(get_unauth /orders)"
+check "POST /spots/{id}/reviews"   401 "$(req_unauth POST "/spots/$TEST_SPOT_ID/reviews")"
+check "GET  /users/me/reviews"     401 "$(req_unauth GET  /users/me/reviews)"
+check "GET  /users/me/favorites"   401 "$(req_unauth GET  /users/me/favorites)"
+check "GET  /spots/{id}/favorite"  401 "$(req_unauth GET  "/spots/$TEST_SPOT_ID/favorite")"
+check "PUT  /spots/{id}/favorite"  401 "$(req_unauth PUT  "/spots/$TEST_SPOT_ID/favorite")"
+check "DELETE /spots/{id}/favorite" 401 "$(req_unauth DELETE "/spots/$TEST_SPOT_ID/favorite")"
 
-# ── Happy path tests ──────────────────────────────────────────────────────────
-# Verify that a valid token grants access. Extend this section with all ~20
-# endpoints. Use check() with the expected HTTP status for each.
+# ── Happy path — authenticated requests must not return 401/403 ───────────────
+# GET endpoints: expect 200.
+# Write endpoints (POST/PUT/DELETE): we only verify auth passes (not 401/403).
+# Adjust expected codes as your service behaviour is confirmed.
 
 echo ""
-echo "==> Happy path (authenticated requests)"
+echo "==> Happy path (valid token)"
 
-# TODO: replace with your actual endpoint paths and expected status codes
-check "GET /users"   200 "$(get /users)"
-check "GET /orders"  200 "$(get /orders)"
+check "GET /users/me/reviews"    200 "$(req GET  /users/me/reviews)"
+check "GET /users/me/favorites"  200 "$(req GET  /users/me/favorites)"
+check "GET /spots/{id}/favorite" 200 "$(req GET  "/spots/$TEST_SPOT_ID/favorite")"
+
+# POST with an empty body — expect 400 (bad request) rather than 401 (unauth).
+# This confirms the request reached the service, meaning auth passed.
+check "POST /spots/{id}/reviews passes auth" 400 "$(req POST "/spots/$TEST_SPOT_ID/reviews" -H "Content-Type: application/json" -d '{}')"
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
 
-if [ "$FAIL" -gt 0 ]; then
-  exit 1
-fi
+[ "$FAIL" -eq 0 ] && exit 0 || exit 1
