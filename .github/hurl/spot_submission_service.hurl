@@ -24,12 +24,10 @@ HTTP 200
 
 ###
 
-# Happy path — GET /moderation/submissions
+# Auth enforced at backend layer — moderation routes require JWT even though API Gateway route is public
 GET {{api_base_url}}/prod/moderation/submissions
 
-HTTP 200
-[Asserts]
-header "Content-Type" contains "application/json"
+HTTP 401
 
 ###
 
