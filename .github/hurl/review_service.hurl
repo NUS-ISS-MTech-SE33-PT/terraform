@@ -13,7 +13,7 @@ Content-Type: application/x-amz-json-1.1
 
 HTTP 200
 [Captures]
-token: jsonpath "$.AuthenticationResult.AccessToken"
+token: jsonpath "$.AuthenticationResult.IdToken"
 
 ###
 
