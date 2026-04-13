@@ -34,14 +34,14 @@ resource "aws_ecs_task_definition" "review_service_task" {
       essential = true
       portMappings = [
         {
-          containerPort = 80
+          containerPort = 8080
           protocol      = "tcp"
         }
       ]
       environment = [
         {
           name  = "HTTP_PORTS"
-          value = "80"
+          value = "8080"
         },
         {
           name  = "ReviewPrice__Max"
@@ -80,7 +80,7 @@ resource "aws_ecs_service" "review_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.review_service_target_group.arn
     container_name   = "review-service-container"
-    container_port   = 80
+    container_port   = 8080
   }
 
   lifecycle {
@@ -162,14 +162,14 @@ resource "aws_ecs_task_definition" "spot_submission_service_task" {
       essential = true
       portMappings = [
         {
-          containerPort = 80
+          containerPort = 8080
           protocol      = "tcp"
         }
       ]
       environment = [
         {
           name  = "HTTP_PORTS"
-          value = "80"
+          value = "8080"
         },
         {
           name  = "SpotSubmissionStorage__BucketName"
@@ -224,6 +224,6 @@ resource "aws_ecs_service" "spot_submission_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.spot_submission_service_target_group.arn
     container_name   = "spot-submission-service-container"
-    container_port   = 80
+    container_port   = 8080
   }
 }

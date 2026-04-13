@@ -6,8 +6,8 @@ resource "aws_lb" "review_service_network_load_balancer" {
 }
 
 resource "aws_lb_target_group" "review_service_target_group" {
-  name        = "review-service-target-group"
-  port        = 80
+  name        = "review-svc-tg"
+  port        = 8080
   protocol    = "TCP"
   vpc_id      = aws_vpc.ecs_vpc.id
   target_type = "ip"
@@ -41,7 +41,7 @@ resource "aws_lb" "spot_service_network_load_balancer" {
 }
 
 resource "aws_lb_target_group" "spot_service_target_group" {
-  name        = "spot-svc-tg"
+  name        = "spot-service-target-group"
   port        = 8080
   protocol    = "TCP"
   vpc_id      = aws_vpc.ecs_vpc.id
@@ -76,8 +76,8 @@ resource "aws_lb" "spot_submission_service_network_load_balancer" {
 }
 
 resource "aws_lb_target_group" "spot_submission_service_target_group" {
-  name        = "spot-submission-service-tg"
-  port        = 80
+  name        = "spot-sub-svc-tg"
+  port        = 8080
   protocol    = "TCP"
   vpc_id      = aws_vpc.ecs_vpc.id
   target_type = "ip"
