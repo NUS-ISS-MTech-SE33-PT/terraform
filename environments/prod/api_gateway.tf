@@ -159,7 +159,7 @@ resource "aws_apigatewayv2_integration" "spot_submission_service_integration" {
 resource "aws_apigatewayv2_route" "public_route" {
   for_each = toset([
     "GET /spots/submissions/health",
-    # Moderation authorization/roles are planned for the next sprint.
+    # TODO: add JWT authorization to moderation routes once roles are defined.
     "GET /moderation/submissions",
     "POST /moderation/submissions/{id}/approve",
     "POST /moderation/submissions/{id}/reject"
