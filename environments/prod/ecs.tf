@@ -59,9 +59,6 @@ resource "aws_ecs_task_definition" "review_service_task" {
     }
   ])
 
-  lifecycle {
-    ignore_changes = [container_definitions]
-  }
 }
 
 resource "aws_ecs_service" "review_service" {
@@ -81,10 +78,6 @@ resource "aws_ecs_service" "review_service" {
     target_group_arn = aws_lb_target_group.review_service_target_group.arn
     container_name   = "review-service-container"
     container_port   = 8080
-  }
-
-  lifecycle {
-    ignore_changes = [task_definition]
   }
 }
 
