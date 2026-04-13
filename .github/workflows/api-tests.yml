@@ -17,8 +17,9 @@ jobs:
 
       - name: Install Hurl
         run: |
-          curl -LO https://github.com/Orange-OpenSource/hurl/releases/latest/download/hurl_amd64.deb
-          sudo dpkg -i hurl_amd64.deb
+          VERSION=$(curl -s https://api.github.com/repos/Orange-OpenSource/hurl/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          curl -LO "https://github.com/Orange-OpenSource/hurl/releases/download/${VERSION}/hurl_${VERSION}_amd64.deb"
+          sudo dpkg -i "hurl_${VERSION}_amd64.deb"
 
       - name: Run API tests
         env:
