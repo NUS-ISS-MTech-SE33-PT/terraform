@@ -30,6 +30,7 @@ jobs:
           TEST_SPOT_ID: ${{ secrets.TEST_SPOT_ID }}
         run: |
           hurl --test \
+            --report-tap /dev/stdout \
             --variable api_base_url="$API_BASE_URL" \
             --variable cognito_client_id="$COGNITO_CLIENT_ID" \
             --variable test_username="$TEST_USERNAME" \
