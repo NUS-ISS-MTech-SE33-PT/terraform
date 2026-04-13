@@ -30,7 +30,7 @@ jobs:
           TEST_SPOT_ID: ${{ secrets.TEST_SPOT_ID }}
         run: |
           hurl --test \
-            --report-tap /dev/stdout \
+            --report-tap tap-report.tap \
             --variable api_base_url="$API_BASE_URL" \
             --variable cognito_client_id="$COGNITO_CLIENT_ID" \
             --variable test_username="$TEST_USERNAME" \
@@ -38,3 +38,4 @@ jobs:
             --variable test_spot_id="$TEST_SPOT_ID" \
             .github/hurl/auth_guard.hurl \
             .github/hurl/authenticated.hurl
+          cat tap-report.tap
