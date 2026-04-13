@@ -10,6 +10,12 @@ locals {
       table_arns = [
         "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/spots-prod"
       ]
+    },
+    "spot-submission-service" = {
+      table_arns = [
+        "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/spot-submissions-prod",
+        "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/spots-prod"
+      ]
     }
   }
 }
@@ -69,6 +75,39 @@ resource "aws_iam_role_policy" "dynamodb_policies" {
           "dynamodb:DeleteItem"
         ]
         Resource = [for arn in each.value.table_arns : "${arn}*"]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "bucket_access" {
+  name = "spot-submission-service-spot-submission-uploads-policy"
+  role = "spot-submission-service-ecs-task-role"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:AbortMultipartUpload"
+        ],
+        Resource = "arn:aws:s3:::makan-go-spot-submissions/submissions/*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:ListBucket"
+        ],
+        Resource = "arn:aws:s3:::makan-go-spot-submissions"
+        Condition = {
+          StringLike = {
+            "s3:prefix" = "submissions/*"
+          }
+        }
       }
     ]
   })

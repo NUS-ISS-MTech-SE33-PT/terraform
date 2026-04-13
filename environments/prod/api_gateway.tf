@@ -137,3 +137,56 @@ resource "aws_apigatewayv2_route" "route" {
     create_before_destroy = true
   }
 }
+
+resource "aws_apigatewayv2_integration" "spot_submission_service_integration" {
+  api_id             = aws_apigatewayv2_api.makan_go_http_api.id
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_lb_listener.spot_submission_service_network_load_balancer_listener.arn
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.ecs_vpc_link.id
+  integration_method = "ANY"
+
+  request_parameters = {
+    "overwrite:path"           = "$request.path",
+    "append:header.x-user-sub" = "$context.authorizer.claims.sub"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_apigatewayv2_route" "public_route" {
+  for_each = toset([
+    "GET /spots/submissions/health",
+    # Moderation authorization/roles are planned for the next sprint.
+    "GET /moderation/submissions",
+    "POST /moderation/submissions/{id}/approve",
+    "POST /moderation/submissions/{id}/reject"
+  ])
+
+  api_id    = aws_apigatewayv2_api.makan_go_http_api.id
+  route_key = each.value
+  target    = "integrations/${aws_apigatewayv2_integration.spot_submission_service_integration.id}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_apigatewayv2_route" "user_auth_route" {
+  for_each = toset([
+    "POST /spots/submissions/photos/presign",
+    "POST /spots/submissions"
+  ])
+
+  api_id             = aws_apigatewayv2_api.makan_go_http_api.id
+  route_key          = each.value
+  target             = "integrations/${aws_apigatewayv2_integration.spot_submission_service_integration.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_authorizer.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
