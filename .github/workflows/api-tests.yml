@@ -36,6 +36,6 @@ jobs:
             --variable test_username="$TEST_USERNAME" \
             --variable test_password="$TEST_PASSWORD" \
             --variable test_spot_id="$TEST_SPOT_ID" \
-            .github/hurl/spots.hurl \
-            .github/hurl/auth_guard.hurl \
-            .github/hurl/authenticated.hurl
+            .github/hurl/spot_service.hurl \
+            .github/hurl/review_service_guard.hurl \
+            .github/hurl/review_service.hurl
