@@ -13,7 +13,12 @@ jobs:
     environment: prod
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+
+      - name: Install Hurl
+        run: |
+          curl -LO https://github.com/Orange-OpenSource/hurl/releases/latest/download/hurl_amd64.deb
+          sudo dpkg -i hurl_amd64.deb
 
       - name: Run API tests
         env:
@@ -22,4 +27,12 @@ jobs:
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
           TEST_SPOT_ID: ${{ secrets.TEST_SPOT_ID }}
-        run: bash .github/scripts/api-tests.sh
+        run: |
+          hurl --test \
+            --variable api_base_url="$API_BASE_URL" \
+            --variable cognito_client_id="$COGNITO_CLIENT_ID" \
+            --variable test_username="$TEST_USERNAME" \
+            --variable test_password="$TEST_PASSWORD" \
+            --variable test_spot_id="$TEST_SPOT_ID" \
+            .github/hurl/auth_guard.hurl \
+            .github/hurl/authenticated.hurl

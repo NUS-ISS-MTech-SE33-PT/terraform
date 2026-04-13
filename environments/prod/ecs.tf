@@ -10,6 +10,10 @@ data "aws_iam_role" "review_service_task_role" {
   name = "review-service-ecs-task-role"
 }
 
+data "aws_iam_role" "spot_service_task_role" {
+  name = "spot-service-ecs-task-role"
+}
+
 resource "aws_ecs_task_definition" "review_service_task" {
   family                   = "review-service-task"
   network_mode             = "awsvpc"
@@ -79,3 +83,63 @@ resource "aws_ecs_service" "review_service" {
     ignore_changes = [task_definition]
   }
 }
+
+resource "aws_ecs_task_definition" "spot_service_task" {
+  family                   = "spot-service-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = data.aws_iam_role.spot_service_task_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "spot-service-container"
+      image     = "${aws_ecr_repository.spot_service.repository_url}:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "HTTP_PORTS"
+          value = "80"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "makan-go/prod/spot-service"
+          "awslogs-region"        = "ap-southeast-1"
+          "awslogs-stream-prefix" = "spot-service"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_service" "spot_service" {
+  name            = "spot-service"
+  cluster         = aws_ecs_cluster.prod_cluster.id
+  task_definition = aws_ecs_task_definition.spot_service_task.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = aws_subnet.ecs_subnet[*].id
+    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_sg.id]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.spot_service_target_group.arn
+    container_name   = "spot-service-container"
+    container_port   = 80
+  }
+}
+
+

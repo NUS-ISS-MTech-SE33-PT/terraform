@@ -103,3 +103,37 @@ resource "aws_apigatewayv2_route" "auth_route" {
     create_before_destroy = true
   }
 }
+
+resource "aws_apigatewayv2_integration" "spot_service_integration" {
+  api_id             = aws_apigatewayv2_api.makan_go_http_api.id
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_lb_listener.spot_service_network_load_balancer_listener.arn
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.ecs_vpc_link.id
+  integration_method = "ANY"
+
+  request_parameters = {
+    "overwrite:path"           = "$request.path",
+    "append:header.x-user-sub" = "$context.authorizer.claims.sub"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_apigatewayv2_route" "route" {
+  for_each = toset([
+    "GET /spots/health",
+    "GET /spots",
+    "GET /spots/{id}"
+  ])
+
+  api_id    = aws_apigatewayv2_api.makan_go_http_api.id
+  route_key = each.value
+  target    = "integrations/${aws_apigatewayv2_integration.spot_service_integration.id}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
