@@ -13,7 +13,7 @@ jobs:
     environment: prod
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Hurl
         run: |
@@ -30,12 +30,12 @@ jobs:
           TEST_SPOT_ID: ${{ secrets.TEST_SPOT_ID }}
         run: |
           hurl --test \
-            --report-tap tap-report.tap \
+            --error-format long \
             --variable api_base_url="$API_BASE_URL" \
             --variable cognito_client_id="$COGNITO_CLIENT_ID" \
             --variable test_username="$TEST_USERNAME" \
             --variable test_password="$TEST_PASSWORD" \
             --variable test_spot_id="$TEST_SPOT_ID" \
+            .github/hurl/spots.hurl \
             .github/hurl/auth_guard.hurl \
             .github/hurl/authenticated.hurl
-          cat tap-report.tap
