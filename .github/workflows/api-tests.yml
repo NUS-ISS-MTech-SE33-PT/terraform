@@ -38,4 +38,6 @@ jobs:
             --variable test_spot_id="$TEST_SPOT_ID" \
             .github/hurl/spot_service.hurl \
             .github/hurl/review_service_guard.hurl \
-            .github/hurl/review_service.hurl
+            .github/hurl/review_service.hurl \
+            .github/hurl/spot_submission_service_guard.hurl \
+            .github/hurl/spot_submission_service.hurl
