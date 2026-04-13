@@ -41,7 +41,7 @@ resource "aws_lb" "spot_service_network_load_balancer" {
 }
 
 resource "aws_lb_target_group" "spot_service_target_group" {
-  name        = "spot-service-target-group"
+  name        = "spot-svc-tg"
   port        = 8080
   protocol    = "TCP"
   vpc_id      = aws_vpc.ecs_vpc.id
