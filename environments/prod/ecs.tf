@@ -182,11 +182,11 @@ resource "aws_ecs_task_definition" "spot_submission_service_task" {
         },
         {
           name  = "DynamoDb"
-          value = aws_dynamodb_table.spot_submissions.name
+          value = module.dynamodb_spot_submissions.table_name
         },
         {
           name  = "SpotsTable"
-          value = aws_dynamodb_table.spot_submissions.name
+          value = module.dynamodb_spot_submissions.table_name
         }
       ]
       logConfiguration = {
