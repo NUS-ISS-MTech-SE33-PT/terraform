@@ -1,34 +1,32 @@
-locals {
-  log_group_names = toset([
-    "makan-go/prod/api-gateway-access",
-    "makan-go/prod/review-service",
-    "makan-go/prod/spot-service",
-    "makan-go/prod/spot-submission-service",
-  ])
-}
+module "cloudwatch" {
+  source = "../../modules/cloudwatch"
 
-resource "aws_cloudwatch_log_group" "this" {
-  for_each          = local.log_group_names
-  name              = each.key
-  retention_in_days = 7
-}
+  tags = local.common_tags
 
-moved {
-  from = aws_cloudwatch_log_group.api_gateway_access_log
-  to   = aws_cloudwatch_log_group.this["makan-go/prod/api-gateway-access"]
+  log_group_names = [
+    "${local.common_tags.project}/${local.common_tags.environment}/api-gateway-access",
+    "${local.common_tags.project}/${local.common_tags.environment}/review-service",
+    "${local.common_tags.project}/${local.common_tags.environment}/spot-service",
+    "${local.common_tags.project}/${local.common_tags.environment}/spot-submission-service",
+  ]
 }
 
 moved {
-  from = aws_cloudwatch_log_group.review_service_log
-  to   = aws_cloudwatch_log_group.this["makan-go/prod/review-service"]
+  from = aws_cloudwatch_log_group.this["makan-go/prod/api-gateway-access"]
+  to   = module.cloudwatch.aws_cloudwatch_log_group.this["makan-go/prod/api-gateway-access"]
 }
 
 moved {
-  from = aws_cloudwatch_log_group.spot_service_log
-  to   = aws_cloudwatch_log_group.this["makan-go/prod/spot-service"]
+  from = aws_cloudwatch_log_group.this["makan-go/prod/review-service"]
+  to   = module.cloudwatch.aws_cloudwatch_log_group.this["makan-go/prod/review-service"]
 }
 
 moved {
-  from = aws_cloudwatch_log_group.spot_submission_service_log
-  to   = aws_cloudwatch_log_group.this["makan-go/prod/spot-submission-service"]
+  from = aws_cloudwatch_log_group.this["makan-go/prod/spot-service"]
+  to   = module.cloudwatch.aws_cloudwatch_log_group.this["makan-go/prod/spot-service"]
+}
+
+moved {
+  from = aws_cloudwatch_log_group.this["makan-go/prod/spot-submission-service"]
+  to   = module.cloudwatch.aws_cloudwatch_log_group.this["makan-go/prod/spot-submission-service"]
 }

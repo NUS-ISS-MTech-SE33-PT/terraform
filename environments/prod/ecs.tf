@@ -51,7 +51,7 @@ resource "aws_ecs_task_definition" "review_service_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.this["makan-go/prod/review-service"].name
+          "awslogs-group"         = module.cloudwatch.log_groups["makan-go/prod/review-service"].name
           "awslogs-region"        = local.aws_region
           "awslogs-stream-prefix" = "review-service"
         }
@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "spot_service_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.this["makan-go/prod/spot-service"].name
+          "awslogs-group"         = module.cloudwatch.log_groups["makan-go/prod/spot-service"].name
           "awslogs-region"        = local.aws_region
           "awslogs-stream-prefix" = "spot-service"
         }
@@ -192,7 +192,7 @@ resource "aws_ecs_task_definition" "spot_submission_service_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.this["makan-go/prod/spot-submission-service"].name
+          "awslogs-group"         = module.cloudwatch.log_groups["makan-go/prod/spot-submission-service"].name
           "awslogs-region"        = local.aws_region
           "awslogs-stream-prefix" = "spot-submission-service"
         }

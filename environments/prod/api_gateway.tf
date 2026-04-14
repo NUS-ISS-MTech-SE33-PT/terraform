@@ -31,7 +31,7 @@ resource "aws_apigatewayv2_stage" "prod_stage" {
   auto_deploy = true
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.this["makan-go/prod/api-gateway-access"].arn
+    destination_arn = module.cloudwatch.log_groups["makan-go/prod/api-gateway-access"].arn
     format = jsonencode({
       requestId               = "$context.requestId"
       ip                      = "$context.identity.sourceIp"
