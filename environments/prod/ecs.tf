@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "review_service_task" {
   container_definitions = jsonencode([
     {
       name      = "review-service-container"
-      image     = "${aws_ecr_repository.review_service.repository_url}:latest"
+      image     = "${aws_ecr_repository.services["makango-review-service"].repository_url}:latest"
       essential = true
       portMappings = [
         {
@@ -51,8 +51,8 @@ resource "aws_ecs_task_definition" "review_service_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "makan-go/prod/review-service"
-          "awslogs-region"        = "ap-southeast-1"
+          "awslogs-group"         = aws_cloudwatch_log_group.this["makan-go/prod/review-service"].name
+          "awslogs-region"        = local.aws_region
           "awslogs-stream-prefix" = "review-service"
         }
       }
@@ -75,7 +75,7 @@ resource "aws_ecs_service" "review_service" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.review_service_target_group.arn
+    target_group_arn = aws_lb_target_group.service["review_service"].arn
     container_name   = "review-service-container"
     container_port   = 8080
   }
@@ -93,7 +93,7 @@ resource "aws_ecs_task_definition" "spot_service_task" {
   container_definitions = jsonencode([
     {
       name      = "spot-service-container"
-      image     = "${aws_ecr_repository.spot_service.repository_url}:latest"
+      image     = "${aws_ecr_repository.services["makango-spot-service"].repository_url}:latest"
       essential = true
       portMappings = [
         {
@@ -110,8 +110,8 @@ resource "aws_ecs_task_definition" "spot_service_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "makan-go/prod/spot-service"
-          "awslogs-region"        = "ap-southeast-1"
+          "awslogs-group"         = aws_cloudwatch_log_group.this["makan-go/prod/spot-service"].name
+          "awslogs-region"        = local.aws_region
           "awslogs-stream-prefix" = "spot-service"
         }
       }
@@ -133,7 +133,7 @@ resource "aws_ecs_service" "spot_service" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.spot_service_target_group.arn
+    target_group_arn = aws_lb_target_group.service["spot_service"].arn
     container_name   = "spot-service-container"
     container_port   = 8080
   }
@@ -151,7 +151,7 @@ resource "aws_ecs_task_definition" "spot_submission_service_task" {
   container_definitions = jsonencode([
     {
       name      = "spot-submission-service-container"
-      image     = "${aws_ecr_repository.spot_submission_service.repository_url}:latest"
+      image     = "${aws_ecr_repository.services["makango-spot-submission-service"].repository_url}:latest"
       essential = true
       portMappings = [
         {
@@ -192,8 +192,8 @@ resource "aws_ecs_task_definition" "spot_submission_service_task" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "makan-go/prod/spot-submission-service"
-          "awslogs-region"        = "ap-southeast-1"
+          "awslogs-group"         = aws_cloudwatch_log_group.this["makan-go/prod/spot-submission-service"].name
+          "awslogs-region"        = local.aws_region
           "awslogs-stream-prefix" = "spot-submission-service"
         }
       }
@@ -215,7 +215,7 @@ resource "aws_ecs_service" "spot_submission_service" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.spot_submission_service_target_group.arn
+    target_group_arn = aws_lb_target_group.service["spot_submission_service"].arn
     container_name   = "spot-submission-service-container"
     container_port   = 8080
   }

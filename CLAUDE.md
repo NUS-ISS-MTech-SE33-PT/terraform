@@ -9,10 +9,79 @@ This is a **school project** demonstrating microservice architecture on AWS. Two
 
 When suggesting resource configurations, default to low-cost options unless there is a specific security or correctness reason to go higher.
 
-## Upcoming Work
+## Reminders
 
-- **Add two more microservices** — extend ECS task roles, DynamoDB tables, API Gateway integrations, and GHA policies following existing patterns
-- **Destroy-safe config** — see below
+- **Tag promote in deploy workflow** — `deploy-prod.yml` creates a `vX.Y.Z-prod` git tag after a successful `terraform apply`. This works for CI-triggered deploys but fails with a duplicate tag error when the workflow is manually re-triggered (same RC tag, prod tag already exists). Fix: force-update the tag (`git tag -f` + `git push --force`) so the prod tag always reflects the latest deploy. **Deferred — to be replaced by the new tag-based promotion strategy below.**
+
+## Tag-Based Promotion Strategy (Proposed)
+
+This section describes the agreed target state for how code moves from development to production. Not yet fully implemented.
+
+### Core Principle
+
+**Branches handle code collaboration. Tags handle environment promotion.**
+
+- A push to `main` (no tag) is always safe — nothing deploys, no ambiguity.
+- Tags are evidence that a gate has been passed. A deployment can only happen when the right tags exist.
+- Direct pushes to `main` are prohibited for all team members. All changes go through PRs.
+- Repo admins have a bypass rule for emergency/quick iterations (pragmatic escape hatch for a small team).
+
+### Promotion Flow
+
+```
+feature/* branch
+    │
+    └─► PR to main (required, no direct push)
+            │
+            ▼
+        PR merged → merge commit on main
+            │
+            ▼
+        CI pipeline runs on merge commit
+        ├─ unit tests pass  → auto-create tag: ci-passed/vX.Y.Z
+        └─ (future) API tests pass → consolidated into ci-passed/vX.Y.Z
+            │
+            ▼
+        Developer pushes tag: rc/vX.Y.Z
+        (manual step — developer decides major/minor/patch)
+            │
+            ▼
+        Gate check: does ci-passed/vX.Y.Z exist on this commit?
+            │  yes
+            ▼
+        GitHub Environment "prod" — two approval layers:
+        ├─ Auto: ci-passed tag verified ✓
+        └─ Manual: required reviewer approves (manager/lead in GitHub UI)
+            │
+            ▼
+        deploy-prod.yml runs → terraform apply
+            │
+            ▼
+        Deploy succeeds → force-update tag: live
+        (live always points to the commit currently running in prod)
+```
+
+### Tag Naming Convention
+
+| Tag | Created by | Meaning |
+|---|---|---|
+| `ci-passed/vX.Y.Z` | CI (automated) | All checks passed on this commit |
+| `rc/vX.Y.Z` | Developer (manual) | Release candidate — intent to deploy |
+| `live` | CI (automated, force-updated) | Currently deployed commit in prod |
+
+### Design Decisions
+
+- **Tags generated on merge to main only** — not on feature branch commits. Feature branch CI runs for early feedback but produces no tags. The merge commit is the canonical promotion point.
+- **`ci-passed` consolidates all gates** — unit tests and API tests both contribute; a single tag keeps the gate check simple.
+- **`live` is a mutable tag** — always force-updated to reflect current prod. Anyone can run `git show live` to see exactly what is deployed.
+- **Version semantics owned by the developer** — the developer decides major/minor/patch when pushing `rc/vX.Y.Z`. This is the primary advantage of manual tagging over auto-incrementing.
+- **GitHub tag protection rules** — `rc/*` and `ci-passed/*` tags should be protected so only CI and authorised users can create/delete them.
+
+### What This Replaces
+
+The current `deploy-prod.yml` triggers on `v*-rc.*` tags and creates a `vX.Y.Z-prod` tag post-deploy. Under the new strategy:
+- Trigger changes from `v*-rc.*` to `rc/vX.Y.Z`
+- Post-deploy tag changes from `vX.Y.Z-prod` to force-updating `live`
 
 ## Destroy-Safe Design
 

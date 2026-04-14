@@ -31,7 +31,7 @@ resource "aws_apigatewayv2_stage" "prod_stage" {
   auto_deploy = true
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gateway_access_log.arn
+    destination_arn = aws_cloudwatch_log_group.this["makan-go/prod/api-gateway-access"].arn
     format = jsonencode({
       requestId               = "$context.requestId"
       ip                      = "$context.identity.sourceIp"
@@ -68,7 +68,7 @@ resource "aws_apigatewayv2_vpc_link" "ecs_vpc_link" {
 resource "aws_apigatewayv2_integration" "review_service_integration" {
   api_id             = aws_apigatewayv2_api.makan_go_http_api.id
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_lb_listener.review_service_network_load_balancer_listener.arn
+  integration_uri    = aws_lb_listener.service["review_service"].arn
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.ecs_vpc_link.id
   integration_method = "ANY"
@@ -107,7 +107,7 @@ resource "aws_apigatewayv2_route" "auth_route" {
 resource "aws_apigatewayv2_integration" "spot_service_integration" {
   api_id             = aws_apigatewayv2_api.makan_go_http_api.id
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_lb_listener.spot_service_network_load_balancer_listener.arn
+  integration_uri    = aws_lb_listener.service["spot_service"].arn
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.ecs_vpc_link.id
   integration_method = "ANY"
@@ -141,7 +141,7 @@ resource "aws_apigatewayv2_route" "route" {
 resource "aws_apigatewayv2_integration" "spot_submission_service_integration" {
   api_id             = aws_apigatewayv2_api.makan_go_http_api.id
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_lb_listener.spot_submission_service_network_load_balancer_listener.arn
+  integration_uri    = aws_lb_listener.service["spot_submission_service"].arn
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.ecs_vpc_link.id
   integration_method = "ANY"
