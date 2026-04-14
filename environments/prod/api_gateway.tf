@@ -24,12 +24,12 @@ module "api_gateway" {
     review_service = {
       listener_arn = aws_lb_listener.service["review_service"].arn
       routes = [
-        { route_key = "POST /spots/{id}/reviews",    authorization_type = "JWT" },
-        { route_key = "GET /users/me/reviews",        authorization_type = "JWT" },
-        { route_key = "GET /users/me/favorites",      authorization_type = "JWT" },
-        { route_key = "GET /spots/{id}/favorite",     authorization_type = "JWT" },
-        { route_key = "PUT /spots/{id}/favorite",     authorization_type = "JWT" },
-        { route_key = "DELETE /spots/{id}/favorite",  authorization_type = "JWT" },
+        { route_key = "POST /spots/{id}/reviews", authorization_type = "JWT" },
+        { route_key = "GET /users/me/reviews", authorization_type = "JWT" },
+        { route_key = "GET /users/me/favorites", authorization_type = "JWT" },
+        { route_key = "GET /spots/{id}/favorite", authorization_type = "JWT" },
+        { route_key = "PUT /spots/{id}/favorite", authorization_type = "JWT" },
+        { route_key = "DELETE /spots/{id}/favorite", authorization_type = "JWT" },
       ]
     }
     spot_service = {
@@ -49,7 +49,7 @@ module "api_gateway" {
         { route_key = "POST /moderation/submissions/{id}/approve" },
         { route_key = "POST /moderation/submissions/{id}/reject" },
         { route_key = "POST /spots/submissions/photos/presign", authorization_type = "JWT" },
-        { route_key = "POST /spots/submissions",                authorization_type = "JWT" },
+        { route_key = "POST /spots/submissions", authorization_type = "JWT" },
       ]
     }
   }
