@@ -1,10 +1,18 @@
 locals {
-  all_routes = merge([
+  public_routes = merge([
     for svc_key, svc in var.services : {
-      for route in svc.routes : "${svc_key}:${route.route_key}" => {
-        service_key        = svc_key
-        route_key          = route.route_key
-        authorization_type = route.authorization_type
+      for route_key in svc.routes : "${svc_key}:${route_key}" => {
+        service_key = svc_key
+        route_key   = route_key
+      }
+    }
+  ]...)
+
+  jwt_routes = merge([
+    for svc_key, svc in var.services : {
+      for route_key in svc.jwt_routes : "${svc_key}:${route_key}" => {
+        service_key = svc_key
+        route_key   = route_key
       }
     }
   ]...)
@@ -31,13 +39,25 @@ resource "aws_apigatewayv2_integration" "service" {
 }
 
 resource "aws_apigatewayv2_route" "route" {
-  for_each = local.all_routes
+  for_each = local.public_routes
+
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = each.value.route_key
+  target    = "integrations/${aws_apigatewayv2_integration.service[each.value.service_key].id}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_apigatewayv2_route" "jwt_route" {
+  for_each = local.jwt_routes
 
   api_id             = aws_apigatewayv2_api.this.id
   route_key          = each.value.route_key
   target             = "integrations/${aws_apigatewayv2_integration.service[each.value.service_key].id}"
-  authorization_type = each.value.authorization_type
-  authorizer_id      = each.value.authorization_type == "JWT" ? aws_apigatewayv2_authorizer.cognito.id : null
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
 
   lifecycle {
     create_before_destroy = true

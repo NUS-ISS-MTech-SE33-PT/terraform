@@ -23,33 +23,36 @@ module "api_gateway" {
   services = {
     review_service = {
       listener_arn = aws_lb_listener.service["review_service"].arn
-      routes = [
-        { route_key = "POST /spots/{id}/reviews", authorization_type = "JWT" },
-        { route_key = "GET /users/me/reviews", authorization_type = "JWT" },
-        { route_key = "GET /users/me/favorites", authorization_type = "JWT" },
-        { route_key = "GET /spots/{id}/favorite", authorization_type = "JWT" },
-        { route_key = "PUT /spots/{id}/favorite", authorization_type = "JWT" },
-        { route_key = "DELETE /spots/{id}/favorite", authorization_type = "JWT" },
+      routes       = []
+      jwt_routes = [
+        "POST /spots/{id}/reviews",
+        "GET /users/me/reviews",
+        "GET /users/me/favorites",
+        "GET /spots/{id}/favorite",
+        "PUT /spots/{id}/favorite",
+        "DELETE /spots/{id}/favorite",
       ]
     }
     spot_service = {
       listener_arn = aws_lb_listener.service["spot_service"].arn
       routes = [
-        { route_key = "GET /spots/health" },
-        { route_key = "GET /spots" },
-        { route_key = "GET /spots/{id}" },
+        "GET /spots/health",
+        "GET /spots",
+        "GET /spots/{id}",
       ]
     }
     spot_submission_service = {
       listener_arn = aws_lb_listener.service["spot_submission_service"].arn
       routes = [
-        { route_key = "GET /spots/submissions/health" },
+        "GET /spots/submissions/health",
         # TODO: add JWT authorization to moderation routes once roles are defined.
-        { route_key = "GET /moderation/submissions" },
-        { route_key = "POST /moderation/submissions/{id}/approve" },
-        { route_key = "POST /moderation/submissions/{id}/reject" },
-        { route_key = "POST /spots/submissions/photos/presign", authorization_type = "JWT" },
-        { route_key = "POST /spots/submissions", authorization_type = "JWT" },
+        "GET /moderation/submissions",
+        "POST /moderation/submissions/{id}/approve",
+        "POST /moderation/submissions/{id}/reject",
+      ]
+      jwt_routes = [
+        "POST /spots/submissions/photos/presign",
+        "POST /spots/submissions",
       ]
     }
   }
@@ -57,112 +60,43 @@ module "api_gateway" {
 
 # --- Moved blocks (safe to remove after one successful apply) ---
 
+# JWT routes split from the unified route resource
 moved {
-  from = aws_apigatewayv2_api.makan_go_http_api
-  to   = module.api_gateway.aws_apigatewayv2_api.this
+  from = module.api_gateway.aws_apigatewayv2_route.route["review_service:POST /spots/{id}/reviews"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["review_service:POST /spots/{id}/reviews"]
 }
 
 moved {
-  from = aws_apigatewayv2_stage.prod_stage
-  to   = module.api_gateway.aws_apigatewayv2_stage.this
+  from = module.api_gateway.aws_apigatewayv2_route.route["review_service:GET /users/me/reviews"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["review_service:GET /users/me/reviews"]
 }
 
 moved {
-  from = aws_apigatewayv2_authorizer.cognito_authorizer
-  to   = module.api_gateway.aws_apigatewayv2_authorizer.cognito
+  from = module.api_gateway.aws_apigatewayv2_route.route["review_service:GET /users/me/favorites"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["review_service:GET /users/me/favorites"]
 }
 
 moved {
-  from = aws_apigatewayv2_vpc_link.ecs_vpc_link
-  to   = module.api_gateway.aws_apigatewayv2_vpc_link.this
+  from = module.api_gateway.aws_apigatewayv2_route.route["review_service:GET /spots/{id}/favorite"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["review_service:GET /spots/{id}/favorite"]
 }
 
 moved {
-  from = aws_apigatewayv2_integration.review_service_integration
-  to   = module.api_gateway.aws_apigatewayv2_integration.service["review_service"]
+  from = module.api_gateway.aws_apigatewayv2_route.route["review_service:PUT /spots/{id}/favorite"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["review_service:PUT /spots/{id}/favorite"]
 }
 
 moved {
-  from = aws_apigatewayv2_integration.spot_service_integration
-  to   = module.api_gateway.aws_apigatewayv2_integration.service["spot_service"]
+  from = module.api_gateway.aws_apigatewayv2_route.route["review_service:DELETE /spots/{id}/favorite"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["review_service:DELETE /spots/{id}/favorite"]
 }
 
 moved {
-  from = aws_apigatewayv2_integration.spot_submission_service_integration
-  to   = module.api_gateway.aws_apigatewayv2_integration.service["spot_submission_service"]
+  from = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:POST /spots/submissions/photos/presign"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["spot_submission_service:POST /spots/submissions/photos/presign"]
 }
 
 moved {
-  from = aws_apigatewayv2_route.auth_route["POST /spots/{id}/reviews"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["review_service:POST /spots/{id}/reviews"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.auth_route["GET /users/me/reviews"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["review_service:GET /users/me/reviews"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.auth_route["GET /users/me/favorites"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["review_service:GET /users/me/favorites"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.auth_route["GET /spots/{id}/favorite"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["review_service:GET /spots/{id}/favorite"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.auth_route["PUT /spots/{id}/favorite"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["review_service:PUT /spots/{id}/favorite"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.auth_route["DELETE /spots/{id}/favorite"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["review_service:DELETE /spots/{id}/favorite"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.route["GET /spots/health"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_service:GET /spots/health"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.route["GET /spots"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_service:GET /spots"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.route["GET /spots/{id}"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_service:GET /spots/{id}"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.public_route["GET /spots/submissions/health"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:GET /spots/submissions/health"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.public_route["GET /moderation/submissions"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:GET /moderation/submissions"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.public_route["POST /moderation/submissions/{id}/approve"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:POST /moderation/submissions/{id}/approve"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.public_route["POST /moderation/submissions/{id}/reject"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:POST /moderation/submissions/{id}/reject"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.user_auth_route["POST /spots/submissions/photos/presign"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:POST /spots/submissions/photos/presign"]
-}
-
-moved {
-  from = aws_apigatewayv2_route.user_auth_route["POST /spots/submissions"]
-  to   = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:POST /spots/submissions"]
+  from = module.api_gateway.aws_apigatewayv2_route.route["spot_submission_service:POST /spots/submissions"]
+  to   = module.api_gateway.aws_apigatewayv2_route.jwt_route["spot_submission_service:POST /spots/submissions"]
 }

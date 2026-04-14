@@ -47,10 +47,8 @@ variable "tags" {
 variable "services" {
   type = map(object({
     listener_arn = string
-    routes = list(object({
-      route_key          = string
-      authorization_type = optional(string, "NONE")
-    }))
+    routes       = optional(list(string), [])
+    jwt_routes   = optional(list(string), [])
   }))
-  description = "Map of service key to NLB listener ARN and route definitions."
+  description = "Map of service key to NLB listener ARN, public routes, and JWT-authenticated routes."
 }
