@@ -13,7 +13,7 @@ Content-Type: application/x-amz-json-1.1
 
 HTTP 200
 [Captures]
-token: jsonpath "$.AuthenticationResult.IdToken"
+token: jsonpath "$.AuthenticationResult.AccessToken"
 
 ###
 
@@ -24,7 +24,7 @@ HTTP 200
 
 ###
 
-# Auth enforced at backend layer — moderation routes require JWT even though API Gateway route is public
+# Auth enforced at the edge — moderation routes require JWT before the request reaches the service
 GET {{api_base_url}}/prod/moderation/submissions
 
 HTTP 401

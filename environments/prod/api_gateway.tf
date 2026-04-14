@@ -45,14 +45,13 @@ module "api_gateway" {
       listener_arn = aws_lb_listener.service["spot_submission_service"].arn
       routes = [
         "GET /spots/submissions/health",
-        # TODO: add JWT authorization to moderation routes once roles are defined.
-        "GET /moderation/submissions",
-        "POST /moderation/submissions/{id}/approve",
-        "POST /moderation/submissions/{id}/reject",
       ]
       jwt_routes = [
         "POST /spots/submissions/photos/presign",
         "POST /spots/submissions",
+        "GET /moderation/submissions",
+        "POST /moderation/submissions/{id}/approve",
+        "POST /moderation/submissions/{id}/reject",
       ]
     }
   }
