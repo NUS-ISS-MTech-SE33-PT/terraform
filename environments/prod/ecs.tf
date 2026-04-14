@@ -1,7 +1,3 @@
-resource "aws_ecs_cluster" "prod_cluster" {
-  name = "prod-cluster"
-}
-
 data "aws_iam_role" "ecs_task_execution_role" {
   name = "ecs-task-execution-role"
 }
@@ -18,205 +14,90 @@ data "aws_iam_role" "spot_submission_service_task_role" {
   name = "spot-submission-service-ecs-task-role"
 }
 
-resource "aws_ecs_task_definition" "review_service_task" {
-  family                   = "review-service-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = data.aws_iam_role.review_service_task_role.arn
+module "ecs" {
+  source = "../../modules/ecs"
 
-  container_definitions = jsonencode([
-    {
-      name      = "review-service-container"
-      image     = "${aws_ecr_repository.services["makango-review-service"].repository_url}:latest"
-      essential = true
-      portMappings = [
-        {
-          containerPort = 8080
-          protocol      = "tcp"
-        }
-      ]
+  cluster_name       = "prod-cluster"
+  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
+  aws_region         = local.aws_region
+  subnet_ids         = aws_subnet.ecs_subnet[*].id
+  security_group_ids = [aws_security_group.ecs_sg.id]
+  tags               = local.common_tags
+
+  services = {
+    review_service = {
+      name             = "review-service"
+      image            = "${aws_ecr_repository.services["makango-review-service"].repository_url}:latest"
+      task_role_arn    = data.aws_iam_role.review_service_task_role.arn
+      target_group_arn = aws_lb_target_group.service["review_service"].arn
+      log_group_name   = module.cloudwatch.log_groups["${local.common_tags.project}/${local.common_tags.environment}/review-service"].name
       environment = [
-        {
-          name  = "HTTP_PORTS"
-          value = "8080"
-        },
-        {
-          name  = "ReviewPrice__Max"
-          value = "10000"
-        }
+        { name = "HTTP_PORTS", value = "8080" },
+        { name = "ReviewPrice__Max", value = "10000" },
       ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          "awslogs-group"         = module.cloudwatch.log_groups["makan-go/prod/review-service"].name
-          "awslogs-region"        = local.aws_region
-          "awslogs-stream-prefix" = "review-service"
-        }
-      }
     }
-  ])
-
-}
-
-resource "aws_ecs_service" "review_service" {
-  name            = "review-service"
-  cluster         = aws_ecs_cluster.prod_cluster.id
-  task_definition = aws_ecs_task_definition.review_service_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-
-  network_configuration {
-    subnets          = aws_subnet.ecs_subnet[*].id
-    assign_public_ip = true
-    security_groups  = [aws_security_group.ecs_sg.id]
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.service["review_service"].arn
-    container_name   = "review-service-container"
-    container_port   = 8080
-  }
-}
-
-resource "aws_ecs_task_definition" "spot_service_task" {
-  family                   = "spot-service-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = data.aws_iam_role.spot_service_task_role.arn
-
-  container_definitions = jsonencode([
-    {
-      name      = "spot-service-container"
-      image     = "${aws_ecr_repository.services["makango-spot-service"].repository_url}:latest"
-      essential = true
-      portMappings = [
-        {
-          containerPort = 8080
-          protocol      = "tcp"
-        }
-      ]
+    spot_service = {
+      name             = "spot-service"
+      image            = "${aws_ecr_repository.services["makango-spot-service"].repository_url}:latest"
+      task_role_arn    = data.aws_iam_role.spot_service_task_role.arn
+      target_group_arn = aws_lb_target_group.service["spot_service"].arn
+      log_group_name   = module.cloudwatch.log_groups["${local.common_tags.project}/${local.common_tags.environment}/spot-service"].name
       environment = [
-        {
-          name  = "HTTP_PORTS"
-          value = "8080"
-        }
+        { name = "HTTP_PORTS", value = "8080" },
       ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          "awslogs-group"         = module.cloudwatch.log_groups["makan-go/prod/spot-service"].name
-          "awslogs-region"        = local.aws_region
-          "awslogs-stream-prefix" = "spot-service"
-        }
-      }
     }
-  ])
-}
-
-resource "aws_ecs_service" "spot_service" {
-  name            = "spot-service"
-  cluster         = aws_ecs_cluster.prod_cluster.id
-  task_definition = aws_ecs_task_definition.spot_service_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-
-  network_configuration {
-    subnets          = aws_subnet.ecs_subnet[*].id
-    assign_public_ip = true
-    security_groups  = [aws_security_group.ecs_sg.id]
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.service["spot_service"].arn
-    container_name   = "spot-service-container"
-    container_port   = 8080
-  }
-}
-
-resource "aws_ecs_task_definition" "spot_submission_service_task" {
-  family                   = "spot-submission-service-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = data.aws_iam_role.spot_submission_service_task_role.arn
-
-  container_definitions = jsonencode([
-    {
-      name      = "spot-submission-service-container"
-      image     = "${aws_ecr_repository.services["makango-spot-submission-service"].repository_url}:latest"
-      essential = true
-      portMappings = [
-        {
-          containerPort = 8080
-          protocol      = "tcp"
-        }
-      ]
+    spot_submission_service = {
+      name             = "spot-submission-service"
+      image            = "${aws_ecr_repository.services["makango-spot-submission-service"].repository_url}:latest"
+      task_role_arn    = data.aws_iam_role.spot_submission_service_task_role.arn
+      target_group_arn = aws_lb_target_group.service["spot_submission_service"].arn
+      log_group_name   = module.cloudwatch.log_groups["${local.common_tags.project}/${local.common_tags.environment}/spot-submission-service"].name
       environment = [
-        {
-          name  = "HTTP_PORTS"
-          value = "8080"
-        },
-        {
-          name  = "SpotSubmissionStorage__BucketName"
-          value = aws_s3_bucket.spot_submission_photos.bucket
-        },
-        {
-          name  = "SpotSubmissionStorage__KeyPrefix"
-          value = "submissions/"
-        },
-        {
-          name  = "SpotSubmissionStorage__UrlExpiryMinutes"
-          value = "15"
-        },
-        {
-          name  = "SpotSubmissionStorage__PublicBaseUrl"
-          value = "https://${aws_cloudfront_distribution.spot_submission.domain_name}"
-        },
-        {
-          name  = "DynamoDb"
-          value = module.dynamodb_spot_submissions.table_name
-        },
-        {
-          name  = "SpotsTable"
-          value = module.dynamodb_spot_submissions.table_name
-        }
+        { name = "HTTP_PORTS", value = "8080" },
+        { name = "SpotSubmissionStorage__BucketName", value = module.s3_spot_submission_photos.bucket },
+        { name = "SpotSubmissionStorage__KeyPrefix", value = "submissions/" },
+        { name = "SpotSubmissionStorage__UrlExpiryMinutes", value = "15" },
+        { name = "SpotSubmissionStorage__PublicBaseUrl", value = "https://${module.cloudfront_spot_submission.domain_name}" },
+        { name = "DynamoDb", value = module.dynamodb_spot_submissions.table_name },
+        { name = "SpotsTable", value = module.dynamodb_spot_submissions.table_name },
       ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          "awslogs-group"         = module.cloudwatch.log_groups["makan-go/prod/spot-submission-service"].name
-          "awslogs-region"        = local.aws_region
-          "awslogs-stream-prefix" = "spot-submission-service"
-        }
-      }
     }
-  ])
+  }
 }
 
-resource "aws_ecs_service" "spot_submission_service" {
-  name            = "spot-submission-service"
-  cluster         = aws_ecs_cluster.prod_cluster.id
-  task_definition = aws_ecs_task_definition.spot_submission_service_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+# --- Moved blocks (safe to remove after one successful apply) ---
 
-  network_configuration {
-    subnets          = aws_subnet.ecs_subnet[*].id
-    assign_public_ip = true
-    security_groups  = [aws_security_group.ecs_sg.id]
-  }
+moved {
+  from = aws_ecs_cluster.prod_cluster
+  to   = module.ecs.aws_ecs_cluster.this
+}
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.service["spot_submission_service"].arn
-    container_name   = "spot-submission-service-container"
-    container_port   = 8080
-  }
+moved {
+  from = aws_ecs_task_definition.review_service_task
+  to   = module.ecs.aws_ecs_task_definition.service["review_service"]
+}
+
+moved {
+  from = aws_ecs_task_definition.spot_service_task
+  to   = module.ecs.aws_ecs_task_definition.service["spot_service"]
+}
+
+moved {
+  from = aws_ecs_task_definition.spot_submission_service_task
+  to   = module.ecs.aws_ecs_task_definition.service["spot_submission_service"]
+}
+
+moved {
+  from = aws_ecs_service.review_service
+  to   = module.ecs.aws_ecs_service.service["review_service"]
+}
+
+moved {
+  from = aws_ecs_service.spot_service
+  to   = module.ecs.aws_ecs_service.service["spot_service"]
+}
+
+moved {
+  from = aws_ecs_service.spot_submission_service
+  to   = module.ecs.aws_ecs_service.service["spot_submission_service"]
 }

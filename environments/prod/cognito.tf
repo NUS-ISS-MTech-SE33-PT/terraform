@@ -1,7 +1,7 @@
 locals {
   mobile_auth_url    = "makango://auth"
-  web_root_url       = "https://${aws_cloudfront_distribution.web_static.domain_name}"
-  admin_web_root_url = "https://${aws_cloudfront_distribution.admin_web.domain_name}"
+  web_root_url       = "https://${module.cloudfront_web_static.domain_name}"
+  admin_web_root_url = "https://${module.cloudfront_admin_web.domain_name}"
 }
 
 module "cognito" {
