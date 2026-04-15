@@ -14,8 +14,7 @@ module "api_gateway" {
 
   access_log_destination_arn = module.cloudwatch.log_groups["${local.common_tags.project}/${local.common_tags.environment}/api-gateway-access"].arn
 
-  cognito_issuer   = "https://cognito-idp.${local.aws_region}.amazonaws.com/${module.cognito.user_pool_id}"
-  cognito_audience = [module.cognito.android_client_id, module.cognito.admin_web_client_id]
+  cognito_issuer = "https://cognito-idp.${local.aws_region}.amazonaws.com/${module.cognito.user_pool_id}"
 
   vpc_link_subnet_ids         = aws_subnet.ecs_subnet[*].id
   vpc_link_security_group_ids = [aws_security_group.ecs_sg.id]

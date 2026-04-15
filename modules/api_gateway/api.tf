@@ -42,8 +42,7 @@ resource "aws_apigatewayv2_authorizer" "cognito" {
   identity_sources = ["$request.header.Authorization"]
 
   jwt_configuration {
-    issuer   = var.cognito_issuer
-    audience = var.cognito_audience
+    issuer = var.cognito_issuer
   }
 }
 
