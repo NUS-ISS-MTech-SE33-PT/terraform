@@ -58,25 +58,3 @@ module "dynamodb_reviews" {
   ]
   tags = local.common_tags
 }
-
-# --- Moved blocks (safe to remove after one successful apply) ---
-
-moved {
-  from = aws_dynamodb_table.spots
-  to   = module.dynamodb_spots.aws_dynamodb_table.this
-}
-
-moved {
-  from = aws_dynamodb_table.favorites
-  to   = module.dynamodb_favorites.aws_dynamodb_table.this
-}
-
-moved {
-  from = aws_dynamodb_table.spot_submissions
-  to   = module.dynamodb_spot_submissions.aws_dynamodb_table.this
-}
-
-moved {
-  from = aws_dynamodb_table.reviews
-  to   = module.dynamodb_reviews.aws_dynamodb_table.this
-}

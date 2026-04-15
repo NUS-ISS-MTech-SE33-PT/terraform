@@ -8,8 +8,8 @@ module "api_gateway" {
   cors_allow_origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://${aws_cloudfront_distribution.web_static.domain_name}",
-    "https://${aws_cloudfront_distribution.admin_web.domain_name}",
+    "https://${module.cloudfront_web_static.domain_name}",
+    "https://${module.cloudfront_admin_web.domain_name}",
   ]
 
   access_log_destination_arn = module.cloudwatch.log_groups["${local.common_tags.project}/${local.common_tags.environment}/api-gateway-access"].arn
