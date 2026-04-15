@@ -1,7 +1,9 @@
 resource "aws_cognito_user_pool_client" "android_client" {
+  access_token_validity                         = 15
   name                                          = "${var.tags.project}-${var.tags.environment}-android-client"
   user_pool_id                                  = aws_cognito_user_pool.instance.id
   refresh_token_validity                        = 30
+  id_token_validity                             = 15
   auth_session_validity                         = 3
   enable_token_revocation                       = true
   allowed_oauth_flows                           = ["code"]
@@ -21,7 +23,7 @@ resource "aws_cognito_user_pool_client" "android_client" {
 }
 
 resource "aws_cognito_user_pool_client" "admin_web_client" {
-  access_token_validity                         = 60
+  access_token_validity                         = 15
   allowed_oauth_flows                           = ["code"]
   allowed_oauth_flows_user_pool_client          = true
   allowed_oauth_scopes                          = ["email", "openid", "phone", "profile"]
