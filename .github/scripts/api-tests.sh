@@ -57,7 +57,7 @@ COGNITO_RESPONSE=$(curl -s -X POST \
   -H "Content-Type: application/x-amz-json-1.1" \
   -d "$BODY")
 
-TOKEN=$(echo "$COGNITO_RESPONSE" | jq -r '.AuthenticationResult.IdToken')
+TOKEN=$(echo "$COGNITO_RESPONSE" | jq -r '.AuthenticationResult.AccessToken')
 
 if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
   echo "ERROR: Failed to obtain Cognito token. Check secrets and Cognito app client config."
