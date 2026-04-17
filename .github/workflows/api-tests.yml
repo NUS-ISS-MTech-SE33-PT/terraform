@@ -41,6 +41,7 @@ jobs:
             --variable test_password_b="$TEST_PASSWORD_B" \
             --variable test_spot_id="$TEST_SPOT_ID" \
             --variable test_admin_username="$TEST_USERNAME" \
+            --variable test_admin_password="$TEST_PASSWORD" \
             .github/hurl/spot_service.hurl \
             .github/hurl/review_service_guard.hurl \
             .github/hurl/review_service.hurl \
