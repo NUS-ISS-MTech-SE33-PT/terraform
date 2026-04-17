@@ -4,25 +4,7 @@
 #   - Non-admin token    → 403
 #   - Admin token        → 404 (nonexistent ID; proves request reached the handler — RBAC passed)
 
-# --- 401: No token ---
-
-# Assert — unauthenticated request to GET /moderation/submissions is rejected
-GET {{api_base_url}}/prod/moderation/submissions
-HTTP 401
-
-###
-
-# Assert — unauthenticated request to POST .../approve is rejected
-POST {{api_base_url}}/prod/moderation/submissions/test-submission-id/approve
-HTTP 401
-
-###
-
-# Assert — unauthenticated request to POST .../reject is rejected
-POST {{api_base_url}}/prod/moderation/submissions/test-submission-id/reject
-HTTP 401
-
-###
+# No-token 401 cases for these routes are covered by c04_api_gateway.hurl.
 
 # --- 403: Authenticated non-admin user ---
 

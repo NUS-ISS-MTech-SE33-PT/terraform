@@ -1,10 +1,2 @@
-# Auth-required user routes must reject requests without a token
-# Moderation endpoint auth tests live in c02_spot_submission_service.hurl
-
-POST {{api_base_url}}/prod/spots/submissions
-HTTP 401
-
-###
-
-POST {{api_base_url}}/prod/spots/submissions/photos/presign
-HTTP 401
+# No-token 401 tests for spot-submission-service protected routes have moved to
+# c04_api_gateway.hurl (C-04 — Cognito authorizer validation).

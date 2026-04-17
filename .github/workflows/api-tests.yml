@@ -44,6 +44,7 @@ jobs:
             --variable test_admin_username="$TEST_ADMIN_USERNAME" \
             --variable test_admin_password="$TEST_ADMIN_PASSWORD" \
             --variable test_spot_id="$TEST_SPOT_ID" \
+            --variable expired_access_token="$EXPIRED_ACCESS_TOKEN"
             .github/hurl/spot_service.hurl \
             .github/hurl/review_service_guard.hurl \
             .github/hurl/review_service.hurl \
@@ -51,4 +52,5 @@ jobs:
             .github/hurl/spot_submission_service.hurl \
             .github/hurl/c01_review_service.hurl \
             .github/hurl/c01_spot_submission_service.hurl \
-            .github/hurl/c02_spot_submission_service.hurl              
+            .github/hurl/c02_spot_submission_service.hurl \
+            .github/hurl/c04_api_gateway.hurl
