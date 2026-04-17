@@ -23,6 +23,11 @@ variable "cognito_issuer" {
   description = "JWT issuer URL (Cognito user pool endpoint)."
 }
 
+variable "cognito_audience" {
+  type        = list(string)
+  description = "Cognito app client IDs that are valid JWT audiences."
+}
+
 variable "vpc_link_subnet_ids" {
   type        = list(string)
   description = "Subnet IDs for the VPC link."
