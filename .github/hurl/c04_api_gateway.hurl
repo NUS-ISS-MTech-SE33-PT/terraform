@@ -82,27 +82,17 @@ HTTP 401
 
 ###
 
-# ── Invalid tokens ────────────────────────────────────────────────────────────
-# Hardcoded fake JWTs. API Gateway fails these at signature validation (JWKS
-# lookup against Cognito) before evaluating any claim, so the specific payload
-# content does not need to be cryptographically sound — any non-Cognito-signed
-# token produces HTTP 401.
+# ── Tampered signature ────────────────────────────────────────────────────────
+# Proves that API Gateway enforces signature validation and does not accept
+# arbitrary JWT-structured strings. Uses a hardcoded fake token: valid header +
+# payload structure, bogus signature bytes.
+#
+# Wrong issuer and unknown client_id are NOT tested here. A fake token always
+# fails at signature validation before claims are evaluated, so a 401 from a
+# fake token cannot prove that either of those specific checks is working. Those
+# controls are verified via Terraform config inspection (api.tf:44-47,
+# environments/prod/api_gateway.tf:17-18).
 
-# Tampered signature — valid header + payload structure, bogus signature bytes
 GET {{api_base_url}}/prod/users/me/reviews
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXIiLCJleHAiOjk5OTk5OTk5OTl9.dGFtcGVyZWQtc2lnbmF0dXJlYnl0ZXM
-HTTP 401
-
-###
-
-# Wrong issuer — payload encodes iss pointing to a different Cognito region/pool
-GET {{api_base_url}}/prod/users/me/reviews
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiaXNzIjoiaHR0cHM6Ly9jb2duaXRvLWlkcC5ldS13ZXN0LTEuYW1hem9uYXdzLmNvbS9ldS13ZXN0LTFfV1JPTkdQT09MIiwiZXhwIjo5OTk5OTk5OTk5fQ.ZmFrZXNpZ25hdHVyZQ
-HTTP 401
-
-###
-
-# Unknown client_id — payload encodes a client_id absent from the audience allowlist
-GET {{api_base_url}}/prod/users/me/reviews
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiY2xpZW50X2lkIjoiZmFrZS1jbGllbnQtaWQtMDAwMDAwMDAwIiwiZXhwIjo5OTk5OTk5OTk5fQ.ZmFrZXNpZ25hdHVyZQ
 HTTP 401
