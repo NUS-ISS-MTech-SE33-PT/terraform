@@ -34,8 +34,8 @@ Content-Type: application/x-amz-json-1.1
   "AuthFlow": "USER_PASSWORD_AUTH",
   "ClientId": "{{cognito_client_id}}",
   "AuthParameters": {
-    "USERNAME": "{{test_username}}",
-    "PASSWORD": "{{test_password}}"
+    "USERNAME": "{{test_normal_username_a}}",
+    "PASSWORD": "{{test_normal_password_a}}"
   }
 }
 
