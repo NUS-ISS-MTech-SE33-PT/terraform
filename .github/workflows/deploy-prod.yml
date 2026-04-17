@@ -3,6 +3,11 @@ on:
   push:
     tags:
       - 'v*-rc.*'
+  workflow_dispatch:
+
+concurrency:
+  group: terraform-prod
+  cancel-in-progress: false
 
 permissions:
   id-token: write
