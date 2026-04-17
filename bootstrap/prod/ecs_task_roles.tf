@@ -4,6 +4,7 @@ locals {
       table_arns = [
         "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/reviews-prod",
         "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/favorites-prod",
+        "arn:aws:dynamodb:${local.aws_region}:${local.account_id}:table/spots-prod",
       ]
     },
     "spot-service" = {
