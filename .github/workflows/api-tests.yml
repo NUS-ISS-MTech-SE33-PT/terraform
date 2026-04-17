@@ -46,4 +46,5 @@ jobs:
             .github/hurl/spot_submission_service_guard.hurl \
             .github/hurl/spot_submission_service.hurl \
             .github/hurl/c01_review_service.hurl \
-            .github/hurl/c01_spot_submission_service.hurl
+            .github/hurl/c01_spot_submission_service.hurl \
+            .github/hurl/c02_spot_submission_service.hurl
