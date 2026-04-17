@@ -27,6 +27,8 @@ jobs:
           COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          TEST_USERNAME_B: ${{ secrets.TEST_USERNAME_B }}
+          TEST_PASSWORD_B: ${{ secrets.TEST_PASSWORD_B }}
           TEST_SPOT_ID: ${{ secrets.TEST_SPOT_ID }}
         run: |
           hurl --test \
@@ -35,9 +37,13 @@ jobs:
             --variable cognito_client_id="$COGNITO_CLIENT_ID" \
             --variable test_username="$TEST_USERNAME" \
             --variable test_password="$TEST_PASSWORD" \
+            --variable test_username_b="$TEST_USERNAME_B" \
+            --variable test_password_b="$TEST_PASSWORD_B" \
             --variable test_spot_id="$TEST_SPOT_ID" \
             .github/hurl/spot_service.hurl \
             .github/hurl/review_service_guard.hurl \
             .github/hurl/review_service.hurl \
             .github/hurl/spot_submission_service_guard.hurl \
-            .github/hurl/spot_submission_service.hurl
+            .github/hurl/spot_submission_service.hurl \
+            .github/hurl/c01_review_service.hurl \
+            .github/hurl/c01_spot_submission_service.hurl
