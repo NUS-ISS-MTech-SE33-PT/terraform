@@ -34,6 +34,9 @@ module "ecs" {
       environment = [
         { name = "HTTP_PORTS", value = "8080" },
         { name = "ReviewPrice__Max", value = "10000" },
+        { name = "SpotSubmissionStorage__BucketName", value = module.s3_spot_submission_photos.bucket },
+        { name = "SpotSubmissionStorage__KeyPrefix", value = "submissions/" },
+        { name = "SpotSubmissionStorage__PublicBaseUrl", value = "https://${module.cloudfront_spot_submission.domain_name}" },
       ]
     }
     spot_service = {
