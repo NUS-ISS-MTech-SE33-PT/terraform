@@ -34,7 +34,7 @@ HTTP 200
 upload_url: jsonpath "$.uploadUrl"
 upload_key: jsonpath "$.uploadFields.key"
 content_type_field: jsonpath "$.uploadFields['Content-Type']"
-policy: jsonpath "$.uploadFields.policy"
+policy: jsonpath "$.uploadFields.Policy"
 x_amz_algorithm: jsonpath "$.uploadFields['x-amz-algorithm']"
 x_amz_credential: jsonpath "$.uploadFields['x-amz-credential']"
 x_amz_date: jsonpath "$.uploadFields['x-amz-date']"
@@ -43,7 +43,7 @@ x_amz_security_token: jsonpath "$.uploadFields['x-amz-security-token']"
 [Asserts]
 jsonpath "$.uploadFields.key" exists
 jsonpath "$.uploadFields['Content-Type']" == "image/jpeg"
-jsonpath "$.uploadFields.policy" exists
+jsonpath "$.uploadFields.Policy" exists
 
 ###
 
