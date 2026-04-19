@@ -21,7 +21,7 @@ token_a: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Step 2 — Create a review as User A
-POST {{api_base_url}}/spots/{{test_spot_id}}/reviews
+POST {{api_base_url}}/prod/spots/{{test_spot_id}}/reviews
 Authorization: Bearer {{token_a}}
 Content-Type: application/json
 {
@@ -59,7 +59,7 @@ token_b: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Assert — User B's review list must not contain User A's review
-GET {{api_base_url}}/users/me/reviews
+GET {{api_base_url}}/prod/users/me/reviews
 Authorization: Bearer {{token_b}}
 
 HTTP 200

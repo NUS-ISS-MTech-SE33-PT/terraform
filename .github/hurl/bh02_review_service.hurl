@@ -21,7 +21,7 @@ token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Assert — handled validation error returns code/message/traceId without leaking internals
-POST {{api_base_url}}/spots/{{test_spot_id}}/reviews
+POST {{api_base_url}}/prod/spots/{{test_spot_id}}/reviews
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
@@ -38,4 +38,3 @@ header "Content-Type" contains "application/json"
 jsonpath "$.code" == "validation_error"
 jsonpath "$.message" == "spotId is required."
 jsonpath "$.traceId" exists
-

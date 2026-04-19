@@ -21,7 +21,7 @@ token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Assert — valid presign returns multipart POST fields
-POST {{api_base_url}}/spots/submissions/photos/presign
+POST {{api_base_url}}/prod/spots/submissions/photos/presign
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
@@ -41,7 +41,7 @@ jsonpath "$.uploadFields.policy" exists
 ###
 
 # Assert — mismatched extension/content type is rejected at presign time
-POST {{api_base_url}}/spots/submissions/photos/presign
+POST {{api_base_url}}/prod/spots/submissions/photos/presign
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
@@ -53,4 +53,3 @@ HTTP 400
 [Asserts]
 header "Content-Type" contains "application/json"
 jsonpath "$.message" == "File extension does not match content type."
-

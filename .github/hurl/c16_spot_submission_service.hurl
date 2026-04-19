@@ -21,7 +21,7 @@ token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Step 2 — Request a valid presigned POST for JPEG uploads
-POST {{api_base_url}}/spots/submissions/photos/presign
+POST {{api_base_url}}/prod/spots/submissions/photos/presign
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
@@ -63,7 +63,7 @@ HTTP 204
 ###
 
 # Assert — submission is rejected because the uploaded bytes are not a real image
-POST {{api_base_url}}/spots/submissions
+POST {{api_base_url}}/prod/spots/submissions
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
@@ -84,4 +84,3 @@ HTTP 400
 [Asserts]
 header "Content-Type" contains "application/json"
 jsonpath "$.message" == "Unsupported file header."
-
