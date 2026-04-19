@@ -28,21 +28,21 @@ user_token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Assert — non-admin token → GET /moderation/submissions must return 403
-GET {{api_base_url}}/prod/moderation/submissions
+GET {{api_base_url}}/moderation/submissions
 Authorization: Bearer {{user_token}}
 HTTP 403
 
 ###
 
 # Assert — non-admin token → POST .../approve must return 403
-POST {{api_base_url}}/prod/moderation/submissions/test-submission-id/approve
+POST {{api_base_url}}/moderation/submissions/test-submission-id/approve
 Authorization: Bearer {{user_token}}
 HTTP 403
 
 ###
 
 # Assert — non-admin token → POST .../reject must return 403
-POST {{api_base_url}}/prod/moderation/submissions/test-submission-id/reject
+POST {{api_base_url}}/moderation/submissions/test-submission-id/reject
 Authorization: Bearer {{user_token}}
 HTTP 403
 
@@ -70,7 +70,7 @@ admin_token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Assert — admin token → GET /moderation/submissions reaches the handler → 200
-GET {{api_base_url}}/prod/moderation/submissions
+GET {{api_base_url}}/moderation/submissions
 Authorization: Bearer {{admin_token}}
 HTTP 200
 
@@ -78,7 +78,7 @@ HTTP 200
 
 # Assert — admin token reaches the handler (RBAC passed); nonexistent ID → 404
 # A 403 here would mean RBAC is broken
-POST {{api_base_url}}/prod/moderation/submissions/nonexistent-submission-id/approve
+POST {{api_base_url}}/moderation/submissions/nonexistent-submission-id/approve
 Authorization: Bearer {{admin_token}}
 HTTP 404
 
@@ -86,6 +86,6 @@ HTTP 404
 
 # Assert — admin token reaches the handler (RBAC passed); nonexistent ID → 404
 # A 403 here would mean RBAC is broken
-POST {{api_base_url}}/prod/moderation/submissions/nonexistent-submission-id/reject
+POST {{api_base_url}}/moderation/submissions/nonexistent-submission-id/reject
 Authorization: Bearer {{admin_token}}
 HTTP 404

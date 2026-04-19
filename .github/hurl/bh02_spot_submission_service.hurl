@@ -21,7 +21,7 @@ token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Assert — missing presign fields return code/message/traceId without leaking internals
-POST {{api_base_url}}/prod/spots/submissions/photos/presign
+POST {{api_base_url}}/spots/submissions/photos/presign
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {

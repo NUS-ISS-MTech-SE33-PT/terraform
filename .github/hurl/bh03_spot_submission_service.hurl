@@ -21,7 +21,7 @@ token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Step 2 — Request a valid presigned POST for JPEG uploads
-POST {{api_base_url}}/prod/spots/submissions/photos/presign
+POST {{api_base_url}}/spots/submissions/photos/presign
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {

@@ -21,7 +21,7 @@ token_a: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Step 2 — User A requests a presigned upload URL
-POST {{api_base_url}}/prod/spots/submissions/photos/presign
+POST {{api_base_url}}/spots/submissions/photos/presign
 Authorization: Bearer {{token_a}}
 Content-Type: application/json
 {
@@ -56,7 +56,7 @@ token_b: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Assert — User B must not be able to submit using User A's storage key
-POST {{api_base_url}}/prod/spots/submissions
+POST {{api_base_url}}/spots/submissions
 Authorization: Bearer {{token_b}}
 Content-Type: application/json
 {

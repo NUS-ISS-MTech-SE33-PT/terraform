@@ -18,21 +18,21 @@ token: jsonpath "$.AuthenticationResult.AccessToken"
 ###
 
 # Happy path — GET /spots/submissions/health
-GET {{api_base_url}}/prod/spots/submissions/health
+GET {{api_base_url}}/spots/submissions/health
 
 HTTP 200
 
 ###
 
 # Auth enforced at the edge — moderation routes require JWT before the request reaches the service
-GET {{api_base_url}}/prod/moderation/submissions
+GET {{api_base_url}}/moderation/submissions
 
 HTTP 401
 
 ###
 
 # POST with empty body — expect 400 (bad request), not 401, confirming auth passed
-POST {{api_base_url}}/prod/spots/submissions
+POST {{api_base_url}}/spots/submissions
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {}
@@ -42,7 +42,7 @@ HTTP 400
 ###
 
 # POST with empty body — expect 400 (bad request), not 401, confirming auth passed
-POST {{api_base_url}}/prod/spots/submissions/photos/presign
+POST {{api_base_url}}/spots/submissions/photos/presign
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {}
