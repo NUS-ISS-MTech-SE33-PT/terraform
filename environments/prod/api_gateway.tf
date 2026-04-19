@@ -24,6 +24,8 @@ module "api_gateway" {
     review_service = {
       listener_arn = aws_lb_listener.service["review_service"].arn
       routes = [
+        "GET /reviews/health",
+        "GET /spots/{id}/reviews",
         "GET /reviews/recent",
       ]
       jwt_routes = [
