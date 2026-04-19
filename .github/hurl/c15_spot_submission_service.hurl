@@ -36,7 +36,7 @@ jsonpath "$.photoUrl" exists
 jsonpath "$.storageKey" exists
 jsonpath "$.uploadFields.key" exists
 jsonpath "$.uploadFields['Content-Type']" == "image/png"
-jsonpath "$.uploadFields.policy" exists
+jsonpath "$.uploadFields.Policy" exists
 
 ###
 
