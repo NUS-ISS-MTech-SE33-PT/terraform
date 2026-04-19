@@ -113,3 +113,21 @@ resource "aws_iam_role_policy" "bucket_access" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "review_bucket_read_access" {
+  name = "review-service-spot-submission-uploads-read-policy"
+  role = "review-service-ecs-task-role"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = "arn:aws:s3:::makan-go-spot-submissions/submissions/*"
+      }
+    ]
+  })
+}
