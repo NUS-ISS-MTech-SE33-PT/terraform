@@ -25,6 +25,7 @@ jobs:
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
           COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
+          EXPIRED_ACCESS_TOKEN: ${{ secrets.EXPIRED_ACCESS_TOKEN }}
           TEST_NORMAL_USERNAME_A: ${{ secrets.TEST_NORMAL_USERNAME_A }}
           TEST_NORMAL_PASSWORD_A: ${{ secrets.TEST_NORMAL_PASSWORD_A }}
           TEST_NORMAL_USERNAME_B: ${{ secrets.TEST_NORMAL_USERNAME_B }}
@@ -50,7 +51,13 @@ jobs:
             .github/hurl/review_service.hurl \
             .github/hurl/spot_submission_service_guard.hurl \
             .github/hurl/spot_submission_service.hurl \
+            .github/hurl/bh02_review_service.hurl \
+            .github/hurl/bh02_spot_submission_service.hurl \
+            .github/hurl/bh03_spot_submission_service.hurl \
+            .github/hurl/bh08_api_gateway.hurl \
             .github/hurl/c01_review_service.hurl \
             .github/hurl/c01_spot_submission_service.hurl \
             .github/hurl/c02_spot_submission_service.hurl \
-            .github/hurl/c04_api_gateway.hurl
+            .github/hurl/c04_api_gateway.hurl \
+            .github/hurl/c15_spot_submission_service.hurl \
+            .github/hurl/c16_spot_submission_service.hurl

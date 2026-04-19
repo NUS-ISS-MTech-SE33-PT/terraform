@@ -23,7 +23,9 @@ module "api_gateway" {
   services = {
     review_service = {
       listener_arn = aws_lb_listener.service["review_service"].arn
-      routes       = []
+      routes = [
+        "GET /reviews/recent",
+      ]
       jwt_routes = [
         "POST /spots/{id}/reviews",
         "GET /users/me/reviews",
