@@ -61,6 +61,9 @@ module "ecs" {
         { name = "SpotSubmissionStorage__KeyPrefix", value = "submissions/" },
         { name = "SpotSubmissionStorage__UrlExpiryMinutes", value = "15" },
         { name = "SpotSubmissionStorage__PublicBaseUrl", value = "https://${module.cloudfront_spot_submission.domain_name}" },
+        { name = "SpotSubmissionStorage__EnforceScanStatus", value = "true" },
+        { name = "SpotSubmissionStorage__ScanStatusTagKey", value = "scan-status" },
+        { name = "SpotSubmissionStorage__RequiredScanStatus", value = "clean" },
         { name = "DynamoDb", value = module.dynamodb_spot_submissions.table_name },
         { name = "SpotsTable", value = module.dynamodb_spot_submissions.table_name },
       ]
