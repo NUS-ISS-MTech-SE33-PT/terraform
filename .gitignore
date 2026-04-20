@@ -47,3 +47,6 @@ terraform.rc
 
 # generated Lambda layer artifacts
 environments/prod/lambda/clamav_layer/clamav-layer.zip
+
+__pycache__/
+*.pyc
