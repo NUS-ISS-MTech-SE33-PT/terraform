@@ -44,3 +44,9 @@ terraform.rc
 
 # for mac
 **/.DS_Store
+
+# generated Lambda layer artifacts
+environments/prod/lambda/clamav_layer/clamav-layer.zip
+
+__pycache__/
+*.pyc

@@ -24,6 +24,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Build ClamAV Lambda layer
+        working-directory: .
+        run: ./scripts/build-clamav-layer.sh
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
 
