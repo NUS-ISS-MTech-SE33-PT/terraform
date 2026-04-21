@@ -117,31 +117,16 @@ resource "aws_iam_role_policy" "bucket_access" {
 
 resource "aws_iam_role_policy" "review_bucket_read_access" {
   name = "review-service-spot-submission-uploads-read-policy"
-<<<<<<< Updated upstream
-  role = "review-service-ecs-task-role"
-=======
   role = aws_iam_role.ecs_task_roles["review-service"].id
->>>>>>> Stashed changes
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-<<<<<<< Updated upstream
-        Effect = "Allow",
-        Action = [
-          "s3:GetObject"
-        ],
-=======
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
->>>>>>> Stashed changes
         Resource = "arn:aws:s3:::makan-go-spot-submissions/submissions/*"
       }
     ]
   })
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

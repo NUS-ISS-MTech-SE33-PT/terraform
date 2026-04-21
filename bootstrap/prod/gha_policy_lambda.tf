@@ -31,7 +31,7 @@ resource "aws_iam_role_policy" "lambda_full_access" {
           "iam:GetRole",
           "iam:PassRole",
         ]
-        Resource  = aws_iam_role.spot_submission_scan_lambda_role.arn
+        Resource = aws_iam_role.spot_submission_scan_lambda_role.arn
         Condition = {
           StringEquals = {
             "iam:PassedToService" = "lambda.amazonaws.com"

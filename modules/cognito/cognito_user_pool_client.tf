@@ -17,7 +17,7 @@ resource "aws_cognito_user_pool_client" "android_client" {
   supported_identity_providers                  = ["COGNITO"]
 
   refresh_token_rotation {
-    feature                   = "ENABLED"
+    feature                    = "ENABLED"
     retry_grace_period_seconds = 10
   }
 }
@@ -42,7 +42,7 @@ resource "aws_cognito_user_pool_client" "admin_web_client" {
   user_pool_id                                  = aws_cognito_user_pool.instance.id
 
   refresh_token_rotation {
-    feature                   = "ENABLED"
+    feature                    = "ENABLED"
     retry_grace_period_seconds = 10
   }
 
