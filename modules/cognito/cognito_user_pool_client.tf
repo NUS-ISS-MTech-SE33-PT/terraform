@@ -20,6 +20,12 @@ resource "aws_cognito_user_pool_client" "android_client" {
     feature                    = "ENABLED"
     retry_grace_period_seconds = 10
   }
+
+  token_validity_units {
+    access_token  = "minutes"
+    id_token      = "hours"
+    refresh_token = "days"
+  }
 }
 
 resource "aws_cognito_user_pool_client" "admin_web_client" {
