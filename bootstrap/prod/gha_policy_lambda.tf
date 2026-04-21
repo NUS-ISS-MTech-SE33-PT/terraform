@@ -28,6 +28,16 @@ resource "aws_iam_role_policy" "lambda_full_access" {
       {
         Effect = "Allow"
         Action = [
+          "lambda:DeleteLayerVersion",
+          "lambda:GetLayerVersion",
+          "lambda:ListLayerVersions",
+          "lambda:PublishLayerVersion",
+        ]
+        Resource = "arn:aws:lambda:${local.aws_region}:${local.account_id}:layer:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "iam:GetRole",
           "iam:PassRole",
         ]
