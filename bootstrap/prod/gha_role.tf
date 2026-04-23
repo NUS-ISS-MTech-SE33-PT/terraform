@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "review_service_cd_assume_role" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:NUS-ISS-MTech-SE33-PT/review-service:ref:refs/heads/main"]
+      values   = ["repo:NUS-ISS-MTech-SE33-PT/review-service:environment:production"]
     }
     condition {
       test     = "StringEquals"
