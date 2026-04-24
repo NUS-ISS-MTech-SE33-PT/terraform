@@ -31,15 +31,16 @@ variable "tags" {
 
 variable "services" {
   type = map(object({
-    name             = string
-    image            = string
-    task_role_arn    = string
-    target_group_arn = string
-    log_group_name   = string
-    environment      = optional(list(object({ name = string, value = string })), [])
-    cpu              = optional(string, "256")
-    memory           = optional(string, "512")
-    desired_count    = optional(number, 1)
+    name               = string
+    image              = string
+    task_role_arn      = string
+    target_group_arn   = string
+    log_group_name     = string
+    environment        = optional(list(object({ name = string, value = string })), [])
+    cpu                = optional(string, "256")
+    memory             = optional(string, "512")
+    desired_count      = optional(number, 1)
+    security_group_ids = optional(list(string), [])
   }))
-  description = "Map of service key to Fargate service configuration."
+  description = "Map of service key to Fargate service configuration. security_group_ids overrides the module-level var when set."
 }
