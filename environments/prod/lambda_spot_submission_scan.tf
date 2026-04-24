@@ -10,7 +10,9 @@ data "archive_file" "spot_submission_scan_lambda" {
 
 locals {
   spot_submission_scan_lambda_name = "makan-go-prod-spot-submission-scan"
-  clamav_layer_zip_path            = "${path.module}/lambda/clamav_layer/clamav-layer.zip"
+  clamav_layer_s3_bucket           = "makan-go-lambda-artifacts-921142537307-ap-southeast-1"
+  clamav_layer_s3_key              = "clamav-layer.zip"
+  clamav_layer_s3_version          = "M3YzAFyTlrUaZqrvQ1E9PD3N4T42VHIV"
 }
 
 resource "aws_cloudwatch_log_group" "spot_submission_scan_lambda" {
@@ -22,8 +24,9 @@ resource "aws_cloudwatch_log_group" "spot_submission_scan_lambda" {
 resource "aws_lambda_layer_version" "clamav" {
   layer_name          = "makan-go-prod-clamav"
   description         = "ClamAV binaries and shared libraries for the spot-submission scanner."
-  filename            = local.clamav_layer_zip_path
-  source_code_hash    = filebase64sha256(local.clamav_layer_zip_path)
+  s3_bucket           = local.clamav_layer_s3_bucket
+  s3_key              = local.clamav_layer_s3_key
+  s3_object_version   = local.clamav_layer_s3_version
   compatible_runtimes = ["python3.12"]
 }
 

@@ -16,6 +16,7 @@ data "aws_iam_policy_document" "vpc_full_access" {
       "ec2:DeleteInternetGateway",
       "ec2:AttachInternetGateway",
       "ec2:DetachInternetGateway",
+      "ec2:DescribeNetworkInterfaces",
       "ec2:DescribeInternetGateways",
       "ec2:CreateRouteTable",
       "ec2:DeleteRouteTable",
