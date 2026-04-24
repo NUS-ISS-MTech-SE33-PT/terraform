@@ -38,7 +38,7 @@ resource "aws_route_table_association" "ecs_rta" {
 # No ingress rules — the VPC Link originates connections, it does not receive them.
 resource "aws_security_group" "ecs_sg" {
   name        = "api-gw-vpc-link-sg"
-  description = "API Gateway VPC Link — outbound to internal NLBs only"
+  description = "API Gateway VPC Link - outbound to internal NLBs only"
   vpc_id      = aws_vpc.ecs_vpc.id
 
   egress {
