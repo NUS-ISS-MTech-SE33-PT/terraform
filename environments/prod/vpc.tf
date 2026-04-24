@@ -1,3 +1,59 @@
+# DynamoDB Gateway VPC Endpoint
+#
+# Gateway endpoints are free (no hourly cost, no data processing charge) and add
+# a route to the specified route tables so DynamoDB traffic is routed through the
+# AWS internal network instead of the internet gateway. This ensures no DynamoDB
+# traffic ever leaves the AWS backbone.
+#
+# The endpoint policy is scoped to the exact 4 tables used by the services and to
+# only the DynamoDB actions those services require — providing least-privilege at
+# the network layer on top of the IAM task role policies.
+resource "aws_vpc_endpoint" "dynamodb" {
+  vpc_id            = aws_vpc.ecs_vpc.id
+  service_name      = "com.amazonaws.${local.aws_region}.dynamodb"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = [aws_route_table.ecs_rt.id]
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowScopedDynamoDBAccess"
+        Effect = "Allow"
+        Principal = {
+          AWS = "*"
+        }
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:BatchGetItem",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:TransactWriteItems",
+          "dynamodb:DescribeTable",
+        ]
+        Resource = [
+          module.dynamodb_spots.table_arn,
+          "${module.dynamodb_spots.table_arn}/index/*",
+          module.dynamodb_reviews.table_arn,
+          "${module.dynamodb_reviews.table_arn}/index/*",
+          module.dynamodb_favorites.table_arn,
+          "${module.dynamodb_favorites.table_arn}/index/*",
+          module.dynamodb_spot_submissions.table_arn,
+          "${module.dynamodb_spot_submissions.table_arn}/index/*",
+        ]
+      }
+    ]
+  })
+
+  tags = merge(local.common_tags, {
+    Name = "dynamodb-gateway-endpoint"
+  })
+}
+
 data "aws_availability_zones" "available" {
   state = "available"
 }
